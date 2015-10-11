@@ -6,8 +6,6 @@
 # Visual Studio Code - https://code.visualstudio.com/
 .settings/
 
-
-### C++ ###
 # Compiled Object files
 *.slo
 *.lo
