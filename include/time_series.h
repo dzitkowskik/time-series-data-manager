@@ -7,11 +7,14 @@
 
 #include <string>
 #include <vector>
+#include "file.h"
+#include "ts_file_definition.h"
 
 template<typename DataType = float, typename TimeType = unsigned long long int>
 class TimeSeries
 {
 public:
+    TimeSeries() : _name("") {}
     TimeSeries(std::string name) : _name(name) {}
     ~TimeSeries() {}
     TimeSeries(const TimeSeries& other)
@@ -38,7 +41,20 @@ public:
     typename std::vector<TimeType>::const_iterator EndTime() const { return _time.cend(); }
 
 public:
-    bool Equal(const TimeSeries& other)
+    static std::vector<TimeSeries<DataType, TimeType>> ReadManyFromFile(
+            const File& file,
+            const TSFileDefinition& definition);
+
+    static void WriteManyToFile(
+            const File& file,
+            std::vector<TimeSeries<DataType, TimeType>> series,
+            const TSFileDefinition& definition);
+
+//    void InitFromFile(File file);
+//    void SaveToFile(File file);
+
+public:
+    bool Equal(const TimeSeries& other) const
     {
         if(this->GetSize() != other.GetSize()) return false;
         auto otherTimeIt = other.BeginTime();
