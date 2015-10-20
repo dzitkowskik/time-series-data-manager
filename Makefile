@@ -112,17 +112,17 @@ ddj_tsfm/fast:
 .PHONY : ddj_tsfm/fast
 
 #=============================================================================
-# Target rules for targets named time_series_data_reader
+# Target rules for targets named ddj_tsfm_test
 
 # Build rule for target.
-time_series_data_reader: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 time_series_data_reader
-.PHONY : time_series_data_reader
+ddj_tsfm_test: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ddj_tsfm_test
+.PHONY : ddj_tsfm_test
 
 # fast build rule for target.
-time_series_data_reader/fast:
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/build
-.PHONY : time_series_data_reader/fast
+ddj_tsfm_test/fast:
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/build
+.PHONY : ddj_tsfm_test/fast
 
 src/file.o: src/file.cpp.o
 .PHONY : src/file.o
@@ -130,7 +130,7 @@ src/file.o: src/file.cpp.o
 # target to build an object file
 src/file.cpp.o:
 	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/file.cpp.o
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/src/file.cpp.o
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/file.cpp.o
 .PHONY : src/file.cpp.o
 
 src/file.i: src/file.cpp.i
@@ -139,7 +139,7 @@ src/file.i: src/file.cpp.i
 # target to preprocess a source file
 src/file.cpp.i:
 	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/file.cpp.i
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/src/file.cpp.i
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/file.cpp.i
 .PHONY : src/file.cpp.i
 
 src/file.s: src/file.cpp.s
@@ -148,7 +148,7 @@ src/file.s: src/file.cpp.s
 # target to generate assembly for a file
 src/file.cpp.s:
 	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/file.cpp.s
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/src/file.cpp.s
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/file.cpp.s
 .PHONY : src/file.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -156,7 +156,7 @@ src/main.o: src/main.cpp.o
 
 # target to build an object file
 src/main.cpp.o:
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/src/main.cpp.o
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/main.cpp.o
 .PHONY : src/main.cpp.o
 
 src/main.i: src/main.cpp.i
@@ -164,7 +164,7 @@ src/main.i: src/main.cpp.i
 
 # target to preprocess a source file
 src/main.cpp.i:
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/src/main.cpp.i
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/main.cpp.i
 .PHONY : src/main.cpp.i
 
 src/main.s: src/main.cpp.s
@@ -172,7 +172,7 @@ src/main.s: src/main.cpp.s
 
 # target to generate assembly for a file
 src/main.cpp.s:
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/src/main.cpp.s
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
 src/time_series.o: src/time_series.cpp.o
@@ -181,7 +181,7 @@ src/time_series.o: src/time_series.cpp.o
 # target to build an object file
 src/time_series.cpp.o:
 	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/time_series.cpp.o
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/src/time_series.cpp.o
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/time_series.cpp.o
 .PHONY : src/time_series.cpp.o
 
 src/time_series.i: src/time_series.cpp.i
@@ -190,7 +190,7 @@ src/time_series.i: src/time_series.cpp.i
 # target to preprocess a source file
 src/time_series.cpp.i:
 	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/time_series.cpp.i
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/src/time_series.cpp.i
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/time_series.cpp.i
 .PHONY : src/time_series.cpp.i
 
 src/time_series.s: src/time_series.cpp.s
@@ -199,7 +199,7 @@ src/time_series.s: src/time_series.cpp.s
 # target to generate assembly for a file
 src/time_series.cpp.s:
 	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/time_series.cpp.s
-	$(MAKE) -f CMakeFiles/time_series_data_reader.dir/build.make CMakeFiles/time_series_data_reader.dir/src/time_series.cpp.s
+	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/time_series.cpp.s
 .PHONY : src/time_series.cpp.s
 
 # Help Target
@@ -209,9 +209,9 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... ddj_tsfm"
+	@echo "... ddj_tsfm_test"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... time_series_data_reader"
 	@echo "... src/file.o"
 	@echo "... src/file.i"
 	@echo "... src/file.s"
