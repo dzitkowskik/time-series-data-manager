@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ghash/Dokumenty/gpustore/src/data
+CMAKE_SOURCE_DIR = /home/ghash/Dokumenty/gpustore/modules/data
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ghash/Dokumenty/gpustore/src/data
+CMAKE_BINARY_DIR = /home/ghash/Dokumenty/gpustore/modules/data
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ghash/Dokumenty/gpustore/src/data/CMakeFiles /home/ghash/Dokumenty/gpustore/src/data/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ghash/Dokumenty/gpustore/modules/data/CMakeFiles /home/ghash/Dokumenty/gpustore/modules/data/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ghash/Dokumenty/gpustore/src/data/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ghash/Dokumenty/gpustore/modules/data/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -99,38 +99,38 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ddj_tsfm
+# Target rules for targets named data
 
 # Build rule for target.
-ddj_tsfm: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ddj_tsfm
-.PHONY : ddj_tsfm
+data: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 data
+.PHONY : data
 
 # fast build rule for target.
-ddj_tsfm/fast:
-	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/build
-.PHONY : ddj_tsfm/fast
+data/fast:
+	$(MAKE) -f CMakeFiles/data.dir/build.make CMakeFiles/data.dir/build
+.PHONY : data/fast
 
 #=============================================================================
-# Target rules for targets named ddj_tsfm_test
+# Target rules for targets named data_test
 
 # Build rule for target.
-ddj_tsfm_test: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ddj_tsfm_test
-.PHONY : ddj_tsfm_test
+data_test: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 data_test
+.PHONY : data_test
 
 # fast build rule for target.
-ddj_tsfm_test/fast:
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/build
-.PHONY : ddj_tsfm_test/fast
+data_test/fast:
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/build
+.PHONY : data_test/fast
 
 src/file.o: src/file.cpp.o
 .PHONY : src/file.o
 
 # target to build an object file
 src/file.cpp.o:
-	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/file.cpp.o
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/file.cpp.o
+	$(MAKE) -f CMakeFiles/data.dir/build.make CMakeFiles/data.dir/src/file.cpp.o
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/src/file.cpp.o
 .PHONY : src/file.cpp.o
 
 src/file.i: src/file.cpp.i
@@ -138,8 +138,8 @@ src/file.i: src/file.cpp.i
 
 # target to preprocess a source file
 src/file.cpp.i:
-	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/file.cpp.i
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/file.cpp.i
+	$(MAKE) -f CMakeFiles/data.dir/build.make CMakeFiles/data.dir/src/file.cpp.i
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/src/file.cpp.i
 .PHONY : src/file.cpp.i
 
 src/file.s: src/file.cpp.s
@@ -147,8 +147,8 @@ src/file.s: src/file.cpp.s
 
 # target to generate assembly for a file
 src/file.cpp.s:
-	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/file.cpp.s
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/file.cpp.s
+	$(MAKE) -f CMakeFiles/data.dir/build.make CMakeFiles/data.dir/src/file.cpp.s
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/src/file.cpp.s
 .PHONY : src/file.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -156,7 +156,7 @@ src/main.o: src/main.cpp.o
 
 # target to build an object file
 src/main.cpp.o:
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/main.cpp.o
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/src/main.cpp.o
 .PHONY : src/main.cpp.o
 
 src/main.i: src/main.cpp.i
@@ -164,7 +164,7 @@ src/main.i: src/main.cpp.i
 
 # target to preprocess a source file
 src/main.cpp.i:
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/main.cpp.i
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/src/main.cpp.i
 .PHONY : src/main.cpp.i
 
 src/main.s: src/main.cpp.s
@@ -172,7 +172,7 @@ src/main.s: src/main.cpp.s
 
 # target to generate assembly for a file
 src/main.cpp.s:
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/main.cpp.s
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
 src/time_series.o: src/time_series.cpp.o
@@ -180,8 +180,8 @@ src/time_series.o: src/time_series.cpp.o
 
 # target to build an object file
 src/time_series.cpp.o:
-	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/time_series.cpp.o
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/time_series.cpp.o
+	$(MAKE) -f CMakeFiles/data.dir/build.make CMakeFiles/data.dir/src/time_series.cpp.o
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/src/time_series.cpp.o
 .PHONY : src/time_series.cpp.o
 
 src/time_series.i: src/time_series.cpp.i
@@ -189,8 +189,8 @@ src/time_series.i: src/time_series.cpp.i
 
 # target to preprocess a source file
 src/time_series.cpp.i:
-	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/time_series.cpp.i
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/time_series.cpp.i
+	$(MAKE) -f CMakeFiles/data.dir/build.make CMakeFiles/data.dir/src/time_series.cpp.i
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/src/time_series.cpp.i
 .PHONY : src/time_series.cpp.i
 
 src/time_series.s: src/time_series.cpp.s
@@ -198,8 +198,8 @@ src/time_series.s: src/time_series.cpp.s
 
 # target to generate assembly for a file
 src/time_series.cpp.s:
-	$(MAKE) -f CMakeFiles/ddj_tsfm.dir/build.make CMakeFiles/ddj_tsfm.dir/src/time_series.cpp.s
-	$(MAKE) -f CMakeFiles/ddj_tsfm_test.dir/build.make CMakeFiles/ddj_tsfm_test.dir/src/time_series.cpp.s
+	$(MAKE) -f CMakeFiles/data.dir/build.make CMakeFiles/data.dir/src/time_series.cpp.s
+	$(MAKE) -f CMakeFiles/data_test.dir/build.make CMakeFiles/data_test.dir/src/time_series.cpp.s
 .PHONY : src/time_series.cpp.s
 
 # Help Target
@@ -208,8 +208,8 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... ddj_tsfm"
-	@echo "... ddj_tsfm_test"
+	@echo "... data"
+	@echo "... data_test"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... src/file.o"

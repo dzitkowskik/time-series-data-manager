@@ -27,5 +27,5 @@ set(SOURCE_FILES_NO_MAIN
         include/time_series.h
         include/parse.h)
 
-add_executable(ddj_tsfm_test ${SOURCE_FILES})
-add_library(ddj_tsfm ${SOURCE_FILES_NO_MAIN})
+add_executable(data_test ${SOURCE_FILES})
+add_library(data ${SOURCE_FILES_NO_MAIN})
