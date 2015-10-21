@@ -64,6 +64,11 @@ public:
         return true;
     }
 
+    bool operator==(const TimeSeries& other) const
+	{
+    	return this->Equal(other);
+	}
+
 private:
     std::string _name;
     std::vector<DataType> _data;

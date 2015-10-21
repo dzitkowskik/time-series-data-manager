@@ -10,6 +10,7 @@ include_directories(include)
 
 set(SOURCE_FILES
         src/main.cpp
+        test/test.cpp
         include/foreach_macro.h
         src/file.cpp
         include/file.h
@@ -25,7 +26,13 @@ set(SOURCE_FILES_NO_MAIN
         include/ts_file_definition.h
         src/time_series.cpp
         include/time_series.h
-        include/parse.h)
+        include/parse.h
+        test/test.cpp)
+
 
 add_executable(data_test ${SOURCE_FILES})
 add_library(data ${SOURCE_FILES_NO_MAIN})
+
+FIND_LIBRARY(GTEST_LIBRARY gtest /usr/local/lib)
+TARGET_LINK_LIBRARIES(data_test ${GTEST_LIBRARY} pthread)
+
