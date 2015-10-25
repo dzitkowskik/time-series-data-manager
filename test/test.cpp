@@ -26,5 +26,5 @@ TEST(TimeSeries, ReadWrite_Data_ToFile)
     auto result = ts.ReadManyFromFile(testFile, fileDefinition);
 
     EXPECT_TRUE(result[0].Equal(ts1));
-    EXPECT_EQ(result[1], ts2);
+    EXPECT_TRUE(result[1].Equal(ts2));
 }
