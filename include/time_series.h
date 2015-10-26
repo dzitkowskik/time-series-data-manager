@@ -27,6 +27,8 @@ public:
 public:
     std::string GetName() const { return _name; }
     size_t GetSize() const { return _time.size(); }
+    const DataType* GetData() const { return _data.data(); }
+    const TimeType* GetTime() const { return _time.data(); }
 
     void InsertData(DataType value) { _data.push_back(value); }
     void InsertTime(TimeType value) { _time.push_back(value); }
@@ -50,8 +52,8 @@ public:
             std::vector<TimeSeries<DataType, TimeType>> series,
             const TSFileDefinition& definition);
 
-//    void InitFromFile(File file);
-//    void SaveToFile(File file);
+//    void InitFromFile(File file, std::string name);
+//    void SaveToFile(File file, std::string name);
 
 public:
     bool Equal(const TimeSeries& other) const
