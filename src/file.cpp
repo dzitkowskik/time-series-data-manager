@@ -4,6 +4,9 @@
 
 #include "file.h"
 #include <cstring>
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 std::string File::GetPath() const { return _path; }
 
@@ -15,13 +18,13 @@ size_t File::GetSize() const
     return size;
 }
 
-
 bool File::Compare(const File &other) const
 {
     auto sizeA = this->GetSize();
     auto sizeB = other.GetSize();
 
-    if(sizeA != sizeB) return false;
+    if(sizeA != sizeB)
+        return false;
 
     const size_t blockSize = 4096;
     size_t remaining = sizeA;
@@ -37,10 +40,26 @@ bool File::Compare(const File &other) const
         inputA.read(bufferA, size);
         inputB.read(bufferB, size);
 
-        if(0 != memcmp(bufferA, bufferB, size)) return false;
+        auto test = memcmp(bufferA, bufferB, size);
+        if(test)
+        {
+            for(int i=0; i < size; i++)
+                if(bufferA[i] != bufferB[i])
+                    return false;
+        }
 
         remaining -= size;
     }
 
     return true;
+}
+
+bool File::Delete()
+{
+    return remove(this->GetPath().c_str()) == 0;
+}
+
+File File::GetTempFile()
+{
+    return File(std::tmpnam(nullptr));
 }

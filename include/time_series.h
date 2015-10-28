@@ -10,7 +10,7 @@
 #include "file.h"
 #include "ts_file_definition.h"
 
-template<typename DataType = float, typename TimeType = unsigned long long int>
+template<typename DataType = double>
 class TimeSeries
 {
 public:
@@ -28,29 +28,29 @@ public:
     std::string GetName() const { return _name; }
     size_t GetSize() const { return _time.size(); }
     const DataType* GetData() const { return _data.data(); }
-    const TimeType* GetTime() const { return _time.data(); }
+    const time_t* GetTime() const { return _time.data(); }
 
     void InsertData(DataType value) { _data.push_back(value); }
-    void InsertTime(TimeType value) { _time.push_back(value); }
+    void InsertTime(time_t value) { _time.push_back(value); }
 
     typename std::vector<DataType>::iterator BeginData() { return _data.begin(); }
     typename std::vector<DataType>::iterator EndData() { return _data.end(); }
-    typename std::vector<TimeType>::iterator BeginTime() { return _time.begin(); }
-    typename std::vector<TimeType>::iterator EndTime() { return _time.end(); }
+    typename std::vector<time_t>::iterator BeginTime() { return _time.begin(); }
+    typename std::vector<time_t>::iterator EndTime() { return _time.end(); }
     typename std::vector<DataType>::const_iterator BeginData() const { return _data.cbegin(); }
     typename std::vector<DataType>::const_iterator EndData() const { return _data.cend(); }
-    typename std::vector<TimeType>::const_iterator BeginTime() const { return _time.cbegin(); }
-    typename std::vector<TimeType>::const_iterator EndTime() const { return _time.cend(); }
+    typename std::vector<time_t>::const_iterator BeginTime() const { return _time.cbegin(); }
+    typename std::vector<time_t>::const_iterator EndTime() const { return _time.cend(); }
 
 public:
-    static std::vector<TimeSeries<DataType, TimeType>> ReadManyFromFile(
+    static std::vector<TimeSeries<DataType>> ReadManyFromFile(
             const File& file,
-            const TSFileDefinition& definition);
+            TSFileDefinition definition);
 
     static void WriteManyToFile(
             const File& file,
-            std::vector<TimeSeries<DataType, TimeType>> series,
-            const TSFileDefinition& definition);
+            std::vector<TimeSeries<DataType>> series,
+            TSFileDefinition definition);
 
 //    void InitFromFile(File file, std::string name);
 //    void SaveToFile(File file, std::string name);
@@ -58,23 +58,23 @@ public:
 public:
     bool Equal(const TimeSeries& other) const
     {
-        if(this->GetSize() != other.GetSize()) return false;
-        auto otherTimeIt = other.BeginTime();
-        auto otherDataIt = other.BeginData();
-        for(auto& time : _time) if(time != *otherTimeIt++) return false;
-        for(auto& data : _data) if(data != *otherDataIt++) return false;
-        return true;
+//        if(this->GetSize() != other.GetSize()) return false;
+//        auto otherTimeIt = other.BeginTime();
+//        auto otherDataIt = other.BeginData();
+//        for(auto& time : _time) if(time != *otherTimeIt++) return false;
+//        for(auto& data : _data) if(data != *otherDataIt++) return false;
+        return (*this) == other;
     }
 
     bool operator==(const TimeSeries& other) const
 	{
-    	return this->Equal(other);
-	}
+        return !(other._data != this->_data || other._time != this->_time);
+    }
 
 private:
     std::string _name;
     std::vector<DataType> _data;
-    std::vector<TimeType> _time;
+    std::vector<time_t> _time;
 };
 
 #endif //TIME_SERIES_DATA_READER_TIME_SERIES_H

@@ -13,7 +13,7 @@
 
 #ifndef DDJ_TIME_SERIES_READER_USE_BOOST
 template<typename T>
-T ParseString(std::string value)
+T ParseString(const std::string& value)
 {
     std::istringstream stream(value);
     T result;
@@ -30,7 +30,7 @@ T ParseString(std::string value)
 
 #ifndef DDJ_TIME_SERIES_READER_USE_BOOST
 template<typename T>
-std::string ParseType(T value)
+std::string ParseType(const T& value)
 {
     std::ostringstream oss;
     oss << value;

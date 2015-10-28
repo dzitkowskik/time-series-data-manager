@@ -8,9 +8,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <boost/shared_array.hpp>
-
-using RawData =  boost::shared_array<char>;
+#include <cstdio>
 
 class File
 {
@@ -22,12 +20,13 @@ public:
     File(File&& other) : _path(std::move(other._path)) {}
 
 public:
+    static File GetTempFile();
+
+public:
     size_t GetSize() const;
     std::string GetPath() const;
     bool Compare(const File& other) const;
-
-    bool WriteRaw(RawData data);
-    RawData ReadRaw();
+    bool Delete();
 
 private:
     std::string _path;

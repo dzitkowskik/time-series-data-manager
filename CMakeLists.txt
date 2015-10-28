@@ -4,7 +4,7 @@ project(time_series_data_reader)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 include_directories(include)
 
@@ -34,5 +34,5 @@ add_executable(data_test ${SOURCE_FILES})
 add_library(data ${SOURCE_FILES_NO_MAIN})
 
 FIND_LIBRARY(GTEST_LIBRARY gtest /usr/local/lib)
-TARGET_LINK_LIBRARIES(data_test ${GTEST_LIBRARY} pthread)
+TARGET_LINK_LIBRARIES(data_test ${GTEST_LIBRARY} pthread boost_thread boost_filesystem boost_system)
 

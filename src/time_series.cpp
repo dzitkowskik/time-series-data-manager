@@ -4,9 +4,10 @@
 
 #include "time_series.h"
 #include "foreach_macro.h"
-#include "parse.h"
+#include <iomanip>
+#include <boost/lexical_cast.hpp>
 
-std::vector<std::string> ReadHeader(std::ifstream& inFile, const TSFileDefinition& definition)
+std::vector<std::string> ReadHeader(std::ifstream& inFile, const TSFileDefinition definition)
 {
     std::vector<std::string> result;
     std::string headerLine;
@@ -23,11 +24,11 @@ std::vector<std::string> ReadHeader(std::ifstream& inFile, const TSFileDefinitio
     return result;
 }
 
-template<typename DataType, typename TimeType>
-std::vector<TimeSeries<DataType, TimeType>> TimeSeries<DataType, TimeType>::ReadManyFromFile(
-        const File& file, const TSFileDefinition& definition)
+template<typename DataType>
+std::vector<TimeSeries<DataType>> TimeSeries<DataType>::ReadManyFromFile(
+        const File& file, TSFileDefinition definition)
 {
-    std::vector<TimeSeries<DataType, TimeType>> result;
+    std::vector<TimeSeries<DataType>> result;
     std::ifstream inputFile(file.GetPath(), std::ios::in);
 
     // GET HEADER
@@ -40,7 +41,7 @@ std::vector<TimeSeries<DataType, TimeType>> TimeSeries<DataType, TimeType>::Read
     // Create time series with names from header
     for(int index = 0; index < header.size(); index++)
         if(index != definition.TimeValueIndex)
-            result.push_back(TimeSeries<DataType, TimeType>(header[index]));
+            result.push_back(TimeSeries<DataType>(header[index]));
 
     std::string line, token;
     size_t position = 0, i, j;
@@ -55,9 +56,16 @@ std::vector<TimeSeries<DataType, TimeType>> TimeSeries<DataType, TimeType>::Read
             line.erase(0, position + definition.Separator.length());
 
             if(j++ == definition.TimeValueIndex)
-                for(auto& ts : result) ts.InsertTime(ParseString<TimeType>(token));
-            else
-                result[i++].InsertData(ParseString<DataType>(token));
+            {
+                std::tm time;
+                strptime(token.c_str(), "%c", &time);
+                time.tm_isdst = -1;
+                auto tt = mktime(&time);
+                for (auto &ts : result)
+                    ts.InsertTime(tt);
+            }
+            else result[i++].InsertData(boost::lexical_cast<DataType>(token));
+
         } while(position != std::string::npos);
     }
 
@@ -66,7 +74,7 @@ std::vector<TimeSeries<DataType, TimeType>> TimeSeries<DataType, TimeType>::Read
 }
 
 
-void WriteLine(std::ofstream& ofstream, std::vector<std::string> lineItems, const TSFileDefinition& definition)
+void WriteLine(std::ofstream& ofstream, std::vector<std::string> lineItems, TSFileDefinition definition)
 {
     std::string line;
     for(int i = 0; i < lineItems.size(); i++)
@@ -77,11 +85,11 @@ void WriteLine(std::ofstream& ofstream, std::vector<std::string> lineItems, cons
     ofstream << line << std::endl;
 }
 
-template<typename DataType, typename TimeType>
-void TimeSeries<DataType, TimeType>::WriteManyToFile(
+template<typename DataType>
+void TimeSeries<DataType>::WriteManyToFile(
         const File& file,
-        std::vector<TimeSeries<DataType, TimeType>> series,
-        const TSFileDefinition& definition)
+        std::vector<TimeSeries<DataType>> series,
+        TSFileDefinition definition)
 {
     std::ofstream outFile(file.GetPath(), std::ios::out);
 
@@ -106,8 +114,12 @@ void TimeSeries<DataType, TimeType>::WriteManyToFile(
     {
         lineItems.clear();
         for(int i = 0; i < dataIterators.size(); i++)
-            lineItems.push_back(ParseType<DataType>(*dataIterators[i]++));
-        lineItems.insert(lineItems.begin()+definition.TimeValueIndex, ParseType<TimeType>(*timeIt));
+        {
+            lineItems.push_back(boost::lexical_cast<std::string>(*dataIterators[i]++));
+        }
+        std::string timeString = ctime(&(*timeIt));
+        timeString.erase(timeString.length()-1);
+        lineItems.insert(lineItems.begin()+definition.TimeValueIndex, timeString);
         WriteLine(outFile, lineItems, definition);
     }
 
@@ -115,19 +127,9 @@ void TimeSeries<DataType, TimeType>::WriteManyToFile(
 }
 
 #define READER_DATA_TYPE_SPEC(X) \
-	template std::vector<TimeSeries<X, int                      >> TimeSeries<X, int                      >::ReadManyFromFile(const File&, const TSFileDefinition&); \
-    template std::vector<TimeSeries<X, unsigned int             >> TimeSeries<X, unsigned int             >::ReadManyFromFile(const File&, const TSFileDefinition&); \
-    template std::vector<TimeSeries<X, long long int            >> TimeSeries<X, long long int            >::ReadManyFromFile(const File&, const TSFileDefinition&); \
-    template std::vector<TimeSeries<X, unsigned long long int   >> TimeSeries<X, unsigned long long int   >::ReadManyFromFile(const File&, const TSFileDefinition&); \
-    template std::vector<TimeSeries<X, long int                 >> TimeSeries<X, long int                 >::ReadManyFromFile(const File&, const TSFileDefinition&); \
-    template std::vector<TimeSeries<X, unsigned long int        >> TimeSeries<X, unsigned long int        >::ReadManyFromFile(const File&, const TSFileDefinition&);
+	template std::vector<TimeSeries<X>> TimeSeries<X>::ReadManyFromFile(const File&, TSFileDefinition);
 FOR_EACH(READER_DATA_TYPE_SPEC, double, float, int, unsigned int, long, unsigned long, long long, unsigned long long)
 
 #define WRITER_DATA_TYPE_SPEC(X) \
-	template void TimeSeries<X, int                      >::WriteManyToFile(const File&, std::vector<TimeSeries<X, int                      >>, const TSFileDefinition&); \
-	template void TimeSeries<X, unsigned int             >::WriteManyToFile(const File&, std::vector<TimeSeries<X, unsigned int             >>, const TSFileDefinition&); \
-	template void TimeSeries<X, long long int            >::WriteManyToFile(const File&, std::vector<TimeSeries<X, long long int            >>, const TSFileDefinition&); \
-	template void TimeSeries<X, unsigned long long int   >::WriteManyToFile(const File&, std::vector<TimeSeries<X, unsigned long long int   >>, const TSFileDefinition&); \
-    template void TimeSeries<X, long int                 >::WriteManyToFile(const File&, std::vector<TimeSeries<X, long int                 >>, const TSFileDefinition&); \
-	template void TimeSeries<X, unsigned long int        >::WriteManyToFile(const File&, std::vector<TimeSeries<X, unsigned long int        >>, const TSFileDefinition&);
+	template void TimeSeries<X>::WriteManyToFile(const File&, std::vector<TimeSeries<X>>, TSFileDefinition);
 FOR_EACH(WRITER_DATA_TYPE_SPEC, double, float, int, unsigned int, long, unsigned long, long long, unsigned long long)
