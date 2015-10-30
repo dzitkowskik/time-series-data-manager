@@ -45,8 +45,8 @@ std::vector<TimeSeries<DataType>> TimeSeries<DataType>::ReadManyFromFile(
 
     std::string line, token;
     size_t position = 0, i, j;
-
-    while(std::getline(inputFile, line))
+    int count = 0;
+    while(std::getline(inputFile, line) && (count < _readMaxRows))
     {
         i = 0, j = 0;  // column number
         do
@@ -67,6 +67,7 @@ std::vector<TimeSeries<DataType>> TimeSeries<DataType>::ReadManyFromFile(
             else result[i++].InsertData(boost::lexical_cast<DataType>(token));
 
         } while(position != std::string::npos);
+        count++;
     }
 
     inputFile.close();

@@ -9,19 +9,23 @@
 #include <vector>
 #include "file.h"
 #include "ts_file_definition.h"
+#include <limits>
 
 template<typename DataType = double>
 class TimeSeries
 {
 public:
-    TimeSeries() : _name("") {}
-    TimeSeries(std::string name) : _name(name) {}
+    TimeSeries() : _name(""), _readMaxRows(INT32_MAX) {}
+    TimeSeries(std::string name) : _name(name), _readMaxRows(INT32_MAX) {}
     ~TimeSeries() {}
     TimeSeries(const TimeSeries& other)
-            : _name(other._name), _data(other._data), _time(other._time)
+            : _name(other._name), _data(other._data), _time(other._time), _readMaxRows(other._readMaxRows)
     {}
     TimeSeries(TimeSeries&& other)
-            : _name(std::move(other._name)), _data(std::move(other._data)), _time(std::move(other._time))
+            : _name(std::move(other._name)),
+              _data(std::move(other._data)),
+              _time(std::move(other._time)),
+              _readMaxRows(std::move(other._readMaxRows))
     {}
 
 public:
@@ -33,6 +37,8 @@ public:
     void InsertData(DataType value) { _data.push_back(value); }
     void InsertTime(time_t value) { _time.push_back(value); }
 
+    void SetReadMaxRows(int max) { _readMaxRows = max; }
+
     typename std::vector<DataType>::iterator BeginData() { return _data.begin(); }
     typename std::vector<DataType>::iterator EndData() { return _data.end(); }
     typename std::vector<time_t>::iterator BeginTime() { return _time.begin(); }
@@ -43,11 +49,11 @@ public:
     typename std::vector<time_t>::const_iterator EndTime() const { return _time.cend(); }
 
 public:
-    static std::vector<TimeSeries<DataType>> ReadManyFromFile(
+    std::vector<TimeSeries<DataType>> ReadManyFromFile(
             const File& file,
             TSFileDefinition definition);
 
-    static void WriteManyToFile(
+    void WriteManyToFile(
             const File& file,
             std::vector<TimeSeries<DataType>> series,
             TSFileDefinition definition);
@@ -75,6 +81,7 @@ private:
     std::string _name;
     std::vector<DataType> _data;
     std::vector<time_t> _time;
+    int _readMaxRows;
 };
 
 #endif //TIME_SERIES_DATA_READER_TIME_SERIES_H

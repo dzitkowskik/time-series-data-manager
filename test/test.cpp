@@ -22,7 +22,6 @@ TEST(TimeSeries, ReadWrite_Data_ToFile)
     const TimeSeries<> ts2 = GenerateFakeTimeSeries("fake2", 1000);
     TSFileDefinition fileDefinition;
     TimeSeries<> ts;
-
     ts.WriteManyToFile(testFile, std::vector<TimeSeries<>> {ts1, ts2}, fileDefinition);
     auto result = ts.ReadManyFromFile(testFile, fileDefinition);
 
@@ -38,7 +37,6 @@ TEST(TimeSeries, ReadWrite_Data_FromFile)
     File testFile2 = File::GetTempFile();
     TSFileDefinition fileDefinition;
     TimeSeries<> ts;
-
     auto data = ts.ReadManyFromFile(realDataFile, fileDefinition);
     ts.WriteManyToFile(testFile, data, fileDefinition);
     auto data2 = ts.ReadManyFromFile(testFile, fileDefinition);
