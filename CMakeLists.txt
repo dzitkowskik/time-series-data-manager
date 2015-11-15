@@ -9,24 +9,16 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 include_directories(include)
 
 set(SOURCE_FILES
-        src/main.cpp
+        main.cpp
         test/test.cpp
-        include/foreach_macro.h
         src/file.cpp
-        include/file.h
-        include/ts_file_definition.h
-        src/time_series.cpp
-        include/time_series.h
-        include/parse.h)
+        src/file_basics.cpp
+        src/time_series.cpp)
 
 set(SOURCE_FILES_NO_MAIN
-        include/foreach_macro.h
         src/file.cpp
-        include/file.h
-        include/ts_file_definition.h
+        src/file_basics.cpp
         src/time_series.cpp
-        include/time_series.h
-        include/parse.h
         test/test.cpp)
 
 

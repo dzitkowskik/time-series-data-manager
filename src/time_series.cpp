@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <boost/lexical_cast.hpp>
 
-std::vector<std::string> ReadHeader(std::ifstream& inFile, const TSFileDefinition definition)
+std::vector<std::string> ReadHeader(std::ifstream& inFile, const CSVFileDefinition definition)
 {
     std::vector<std::string> result;
     std::string headerLine;
@@ -25,8 +25,8 @@ std::vector<std::string> ReadHeader(std::ifstream& inFile, const TSFileDefinitio
 }
 
 template<typename DataType>
-std::vector<TimeSeries<DataType>> TimeSeries<DataType>::ReadManyFromFile(
-        const File& file, TSFileDefinition definition)
+std::vector<TimeSeries<DataType>> TimeSeries<DataType>::ReadFromCSV(
+        File& file, CSVFileDefinition definition, const int maxRows)
 {
     std::vector<TimeSeries<DataType>> result;
     std::ifstream inputFile(file.GetPath(), std::ios::in);
@@ -46,7 +46,7 @@ std::vector<TimeSeries<DataType>> TimeSeries<DataType>::ReadManyFromFile(
     std::string line, token;
     size_t position = 0, i, j;
     int count = 0;
-    while(std::getline(inputFile, line) && (count < _readMaxRows))
+    while(std::getline(inputFile, line) && (count < maxRows))
     {
         i = 0, j = 0;  // column number
         do
@@ -74,8 +74,7 @@ std::vector<TimeSeries<DataType>> TimeSeries<DataType>::ReadManyFromFile(
     return result;
 }
 
-
-void WriteLine(std::ofstream& ofstream, std::vector<std::string> lineItems, TSFileDefinition definition)
+void WriteLine(std::ofstream& ofstream, std::vector<std::string> lineItems, CSVFileDefinition definition)
 {
     std::string line;
     for(int i = 0; i < lineItems.size(); i++)
@@ -87,10 +86,10 @@ void WriteLine(std::ofstream& ofstream, std::vector<std::string> lineItems, TSFi
 }
 
 template<typename DataType>
-void TimeSeries<DataType>::WriteManyToFile(
-        const File& file,
+void TimeSeries<DataType>::WriteToCSV(
+        File& file,
         std::vector<TimeSeries<DataType>> series,
-        TSFileDefinition definition)
+        CSVFileDefinition definition)
 {
     std::ofstream outFile(file.GetPath(), std::ios::out);
 
@@ -127,10 +126,54 @@ void TimeSeries<DataType>::WriteManyToFile(
     outFile.close();
 }
 
-#define READER_DATA_TYPE_SPEC(X) \
-	template std::vector<TimeSeries<X>> TimeSeries<X>::ReadManyFromFile(const File&, TSFileDefinition);
-FOR_EACH(READER_DATA_TYPE_SPEC, double, float, int, unsigned int, long, unsigned long, long long, unsigned long long)
+template<typename DataType>
+std::vector<TimeSeries<DataType>> TimeSeries<DataType>::ReadFromBinary(
+        File& file,
+        BinaryFileDefinition definition,
+        const int maxRows)
+{
+    std::vector<TimeSeries<DataType>> result(definition.NoTimeSeries);
+    size_t size = sizeof(time_t) + definition.NoTimeSeries * sizeof(DataType);
+    char* data = new char[size];
+    time_t* timePtr = reinterpret_cast<time_t*>(data);
+    DataType* dataPtr = reinterpret_cast<DataType*>(data+sizeof(time_t));
+    int rows = 0;
+    while(-1 != file.ReadRaw(data, size) && rows++ < maxRows)
+    {
+        for(int i = 0; i < definition.NoTimeSeries; i++)
+            result[i].Insert(std::make_pair(*timePtr, dataPtr[i]));
+    }
+    delete [] data;
+    return result;
+}
 
-#define WRITER_DATA_TYPE_SPEC(X) \
-	template void TimeSeries<X>::WriteManyToFile(const File&, std::vector<TimeSeries<X>>, TSFileDefinition);
-FOR_EACH(WRITER_DATA_TYPE_SPEC, double, float, int, unsigned int, long, unsigned long, long long, unsigned long long)
+template<typename DataType>
+void TimeSeries<DataType>::WriteToBinary(
+        File& file,
+        std::vector<TimeSeries<DataType>> series)
+{
+    size_t size = sizeof(time_t) + series.size()*sizeof(DataType);
+    char* data = new char[size];
+    time_t* timePtr = reinterpret_cast<time_t*>(data);
+    DataType* dataPtr = reinterpret_cast<DataType*>(data+sizeof(time_t));
+
+    std::vector<typename std::vector<DataType>::iterator> dataIterators;
+    for(auto& ts : series) dataIterators.push_back(ts.BeginData());
+    for(auto timeIt = series[0].BeginTime(); timeIt != series[0].EndTime(); timeIt++)
+    {
+        *timePtr = *timeIt;
+        for(int i = 0; i < dataIterators.size(); i++)
+            dataPtr[i] = *dataIterators[i]++;
+        if(file.WriteRaw(data, size))
+            throw std::runtime_error("Error while writting to a file");
+    }
+    delete [] data;
+}
+
+
+#define TS_DATA_TYPE_SPEC(X) \
+	template std::vector<TimeSeries<X>> TimeSeries<X>::ReadFromCSV(File&, CSVFileDefinition, const int); \
+	template void TimeSeries<X>::WriteToCSV(File&, std::vector<TimeSeries<X>>, CSVFileDefinition); \
+	template std::vector<TimeSeries<X>> TimeSeries<X>::ReadFromBinary(File&, BinaryFileDefinition, const int); \
+	template void TimeSeries<X>::WriteToBinary(File&, std::vector<TimeSeries<X>>);
+FOR_EACH(TS_DATA_TYPE_SPEC, double, float, int, unsigned int, long, unsigned long, long long, unsigned long long)

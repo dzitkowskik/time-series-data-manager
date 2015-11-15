@@ -3,7 +3,9 @@
 //
 
 #include "file.h"
+
 #include <cstring>
+#include <fcntl.h>
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
@@ -56,10 +58,50 @@ bool File::Compare(const File &other) const
 
 bool File::Delete()
 {
+    Close();
     return remove(this->GetPath().c_str()) == 0;
 }
 
 File File::GetTempFile()
 {
     return File(std::tmpnam(nullptr));
+}
+
+int File::ReadRaw(char* data, size_t size)
+{
+    Open(O_RDONLY);
+    ssize_t charRead = SafeRead(_fd, data, size);
+    if (charRead != size) return -1;
+    return 0;
+}
+
+int File::WriteRaw(char *rawData, size_t size)
+{
+    Open(O_WRONLY | O_APPEND | O_CREAT);
+    ssize_t charWrote = SafeWrite(_fd, rawData, size);
+    if (charWrote != size) return -1;
+    return 0;
+}
+
+
+int File::Open(int flags)
+{
+    if(_opened && _flags == flags) return 0;
+    if(_opened) Close();
+    _fd = OpenFile(_path.c_str(), flags);
+    _opened = true;
+    _flags = flags;
+    return _fd;
+}
+
+
+int File::Close()
+{
+    if(_opened)
+    {
+        _opened = false;
+        _flags = 0;
+        return CloseFile(_fd);
+    }
+    return 0;
 }
