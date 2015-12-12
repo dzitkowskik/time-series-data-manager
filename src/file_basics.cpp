@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Karol Dzitkowski. All rights reserved.
 //
 
-#include "errors.h"
-#include "file.h"
+#include "errors.hpp"
+#include "file.hpp"
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>

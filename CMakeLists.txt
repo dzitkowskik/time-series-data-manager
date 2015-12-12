@@ -13,13 +13,15 @@ set(SOURCE_FILES
         test/test.cpp
         src/file.cpp
         src/file_basics.cpp
-        src/time_series.cpp)
+        src/time_series.cpp
+        src/time_series_reader.cpp)
 
 set(SOURCE_FILES_NO_MAIN
+		test/test.cpp
         src/file.cpp
         src/file_basics.cpp
         src/time_series.cpp
-        test/test.cpp)
+        src/time_series_reader.cpp)
 
 
 add_executable(data_test ${SOURCE_FILES})
