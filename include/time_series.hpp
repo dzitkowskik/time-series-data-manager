@@ -110,7 +110,7 @@ private:
     size_t _recordsCnt;
 
 private:
-    static const char* _recordSizeErrorMsg =
+    const char* _recordSizeErrorMsg =
             "Record size does not equal number of columns";
 };
 

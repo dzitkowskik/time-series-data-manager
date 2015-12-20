@@ -5,9 +5,11 @@
 #ifndef TIME_SERIES_DATA_READER_COLUMN_H
 #define TIME_SERIES_DATA_READER_COLUMN_H
 
+#include "data_type.h"
+
 #include <stddef.h>
 #include <stdexcept>
-#include "data_type.h"
+#include <boost/lexical_cast.hpp>
 
 struct RawData
 {
@@ -201,10 +203,10 @@ private:
     std::string _name;
 
 private:
-    static const char* _wrongDataTypeErrorMsg =
+    const std::string _wrongDataTypeErrorMsg =
             "Data type of column is not compatible with requested type";
 
-    static const char* _indexOutOfBoundsErrorMsg =
+    const std::string _indexOutOfBoundsErrorMsg =
             "There is no data on that position - index is too big";
 };
 
