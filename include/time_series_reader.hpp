@@ -37,6 +37,7 @@ private:
 	size_t _bytesRead;
 	size_t _rowsRead;
 	size_t _lastFilePosition;
+	std::vector<std::string> _lastHeader;
 };
 
 #endif /* TIME_SERIES_READER_HPP_ */

@@ -38,10 +38,14 @@ std::vector<TimeSeries<DataType>> TimeSeriesReader::ReadFromCSV(
 
     // GET HEADER
     std::vector<std::string> header;
-    if(definition.UseCustomHeader)
+    if (_lastHeader.size() > 0)
+        header = _lastHeader;
+    else if(definition.UseCustomHeader)
         header = definition.Header;
     else
         header = ReadHeader(inputFile, definition);
+
+    _lastHeader = header;
 
     // Create time series with names from header
     for(int index = 0; index < header.size(); index++)
@@ -51,7 +55,7 @@ std::vector<TimeSeries<DataType>> TimeSeriesReader::ReadFromCSV(
     std::string line, token;
     size_t position = 0, i, j;
     int count = 0;
-    while(std::getline(inputFile, line) && (count < maxRows))
+    while((count < maxRows) && std::getline(inputFile, line))
     {
         i = 0, j = 0;  // column number
         do
