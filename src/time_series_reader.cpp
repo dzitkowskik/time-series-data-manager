@@ -6,11 +6,12 @@
  */
 
 #include "time_series_reader.hpp"
-#include "foreach_macro.hpp"
 #include <iomanip>
 #include <boost/lexical_cast.hpp>
+#include <ts_file_definition.hpp>
+#include <file.hpp>
 
-std::vector<std::string> ReadHeader(std::ifstream& inFile, const CSVFileDefinition definition)
+std::vector<std::string> ReadHeader(std::ifstream& inFile, CSVFileDefinition& definition)
 {
     std::vector<std::string> result;
     std::string headerLine;
@@ -24,58 +25,44 @@ std::vector<std::string> ReadHeader(std::ifstream& inFile, const CSVFileDefiniti
         result.push_back(colName);
     } while(std::string::npos != position);
 
+    definition.Header = result;
     return result;
 }
 
 
-template<typename DataType>
-std::vector<TimeSeries<DataType>> TimeSeriesReader::ReadFromCSV(
-        File& file, CSVFileDefinition definition, const int maxRows)
+TimeSeries TimeSeriesReader::ReadFromCSV(
+        File& file, CSVFileDefinition& definition, const int maxRows)
 {
-    std::vector<TimeSeries<DataType>> result;
+    // Initialize time series
+    TimeSeries result(file.GetPath());
+    result.init(definition.Columns);
+
+    // Open file and set last position
     std::ifstream inputFile(file.GetPath(), std::ios::in);
     inputFile.seekg(_lastFilePosition, inputFile.beg);
 
-    // GET HEADER
+    // Read header
     std::vector<std::string> header;
-    if (_lastHeader.size() > 0)
-        header = _lastHeader;
-    else if(definition.UseCustomHeader)
-        header = definition.Header;
-    else
+    if(definition.HasHeader && _lastFilePosition == 0)
         header = ReadHeader(inputFile, definition);
-
-    _lastHeader = header;
-
-    // Create time series with names from header
-    for(int index = 0; index < header.size(); index++)
-        if(index != definition.TimeValueIndex)
-            result.push_back(TimeSeries<DataType>(header[index]));
+    else
+        header = definition.Header;
+    result.setColumnNames(header);
 
     std::string line, token;
-    size_t position = 0, i, j;
-    int count = 0;
+    size_t position = 0, count;
     while((count < maxRows) && std::getline(inputFile, line))
     {
-        i = 0, j = 0;  // column number
+        std::vector<std::string> record;
         do
         {
             position = line.find(definition.Separator);
             token = line.substr(0, position);
             line.erase(0, position + definition.Separator.length());
-
-            if(j++ == definition.TimeValueIndex)
-            {
-                std::tm time;
-                strptime(token.c_str(), "%c", &time);
-                time.tm_isdst = -1;
-                auto tt = mktime(&time);
-                for (auto &ts : result)
-                    ts.InsertTime(tt);
-            }
-            else result[i++].InsertData(boost::lexical_cast<DataType>(token));
-
+            record.push_back(token);
         } while(position != std::string::npos);
+        result.addRecord(record);
+        record.clear();
         count++;
     }
 
@@ -84,28 +71,23 @@ std::vector<TimeSeries<DataType>> TimeSeriesReader::ReadFromCSV(
     return result;
 }
 
-template<typename DataType>
-std::vector<TimeSeries<DataType>> TimeSeriesReader::ReadFromBinary(
+TimeSeries TimeSeriesReader::ReadFromBinary(
         File& file,
-        BinaryFileDefinition definition,
+        BinaryFileDefinition& definition,
         const int maxRows)
 {
-    std::vector<TimeSeries<DataType>> result(definition.NoTimeSeries);
-    size_t size = sizeof(time_t) + definition.NoTimeSeries * sizeof(DataType);
+    // Initialize time series
+    TimeSeries result(file.GetPath());
+    result.init(definition.Columns);
+    size_t size = result.getRecordSize();
+    result.setColumnNames(definition.Header);
+
     char* data = new char[size];
-    time_t* timePtr = reinterpret_cast<time_t*>(data);
-    DataType* dataPtr = reinterpret_cast<DataType*>(data+sizeof(time_t));
     int rows = 0;
-    while(-1 != file.ReadRaw(data, size) && rows++ < maxRows)
-    {
-        for(int i = 0; i < definition.NoTimeSeries; i++)
-            result[i].Insert(std::make_pair(*timePtr, dataPtr[i]));
-    }
+
+    while((rows++ < maxRows) && (-1 != file.ReadRaw(data, size)))
+        result.addRecord(data);
+
     delete [] data;
     return result;
 }
-
-#define TS_READER_SPEC(X) \
-	template std::vector<TimeSeries<X>> TimeSeriesReader::ReadFromCSV<X>(File&, CSVFileDefinition, const int); \
-	template std::vector<TimeSeries<X>> TimeSeriesReader::ReadFromBinary<X>(File&, BinaryFileDefinition, const int);
-FOR_EACH(TS_READER_SPEC, double, float, int, unsigned int, long, unsigned long, long long, unsigned long long)

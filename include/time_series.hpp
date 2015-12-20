@@ -5,14 +5,13 @@
 #ifndef TIME_SERIES_DATA_READER_TIME_SERIES_H
 #define TIME_SERIES_DATA_READER_TIME_SERIES_H
 
+#include "column.hpp"
+
 #include <string>
 #include <vector>
-#include "file.hpp"
-#include "ts_file_definition.hpp"
 #include <limits>
 #include <algorithm>
 
-template<typename DataType = double>
 class TimeSeries
 {
 public:
@@ -20,98 +19,90 @@ public:
     TimeSeries(std::string name) : _name(name) {}
     ~TimeSeries() {}
     TimeSeries(const TimeSeries& other)
-            : _name(other._name), _data(other._data), _time(other._time)
+            : _name(other._name), _columns(other._columns)
     {}
     TimeSeries(TimeSeries&& other)
             : _name(std::move(other._name)),
-              _data(std::move(other._data)),
-              _time(std::move(other._time))
+              _columns(std::move(other._columns))
     {}
 
-//    GETTERS
 public:
-    std::string GetName() const { return _name; }
-    std::vector<DataType> GetData() const { return _data; }
-    std::vector<time_t> GetTime() const { return _time; }
-    const DataType* GetDataRaw() const { return _data.data(); }
-    const time_t* GetTimeRaw() const { return _time.data(); }
-    size_t GetSize() const { return _time.size(); }
-
-//    SETTERS
-public:
-    void SetName(std::string name) { _name = name; }
-    void SetData(std::vector<DataType> data) { _data = data; }
-    void SetTime(std::vector<time_t> time) { _time = time; }
-    void InsertData(DataType value) { _data.push_back(value); }
-    void InsertTime(time_t value) { _time.push_back(value); }
-    void Insert(std::pair<time_t, DataType> item)
+    void init(std::vector<DataType> columnTypes)
     {
-        _time.push_back(item.first);
-        _data.push_back(item.second);
+        for(auto& type : columnTypes)
+            _columns.push_back(Column(type));
     }
 
-//    ACCESS METHODS
-public:
-    std::string& name() { return _name; }
-    std::vector<DataType>& data() { return _data; }
-    std::vector<time_t>& time() { return _time; }
+    const Column& getColumn(size_t colIdx) { _columns[colIdx]; }
+    std::string getName() { return _name; }
+    void setName(std::string name) { _name = name; }
+    size_t getColumnsNumber() { return _columns.size(); }
+    size_t getRecordsCnt() { return _recordsCnt; }
 
-//    ITERATORS
-public:
-    typename std::vector<DataType>::iterator BeginData() { return _data.begin(); }
-    typename std::vector<DataType>::iterator EndData() { return _data.end(); }
-    typename std::vector<time_t>::iterator BeginTime() { return _time.begin(); }
-    typename std::vector<time_t>::iterator EndTime() { return _time.end(); }
-    typename std::vector<DataType>::const_iterator BeginData() const { return _data.cbegin(); }
-    typename std::vector<DataType>::const_iterator EndData() const { return _data.cend(); }
-    typename std::vector<time_t>::const_iterator BeginTime() const { return _time.cbegin(); }
-    typename std::vector<time_t>::const_iterator EndTime() const { return _time.cend(); }
-
-//    WRITE TO FILES
-public:
-    static
-    void WriteToCSV(
-            File& file,
-            std::vector<TimeSeries<DataType>> series,
-            CSVFileDefinition definition);
-
-    static void WriteToBinary(File& file, std::vector<TimeSeries<DataType>> series);
-
-// OTHER
-public:
-    bool Compare(const TimeSeries& other, size_t from = 0) const
+    void setColumnNames(std::vector<std::string> names)
     {
-    	for(int i = 0; i < GetSize(); i++)
-    		if(
-				(*this)[i].first != other[i+from].first ||
-				(*this)[i].second != other[i+from].second
-			)
-    			return false;
-    	return true;
+        for(int i = 0; i < names.size(); i++)
+            _columns[i].setName(names[i]);
     }
 
-//    OPERATORS
-public:
-    bool Equal(const TimeSeries& other) const
+    std::vector<std::string> getColumnNames()
     {
-        return (*this) == other;
+        std::vector<std::string> result;
+        for(auto& column : _columns)
+            result.push_back(column.getName());
+        return result;
     }
 
-    bool operator==(const TimeSeries& other) const
-	{
-        return !(other._data != this->_data || other._time != this->_time);
-    }
-
-    std::pair<time_t, DataType> operator[](const int i) const
+    size_t getRecordSize()
     {
-    	return std::make_pair(_time[i], _data[i]);
+        size_t size = 0;
+        for(auto& column : _columns)
+            size += column.getDataSize();
+        return size;
     }
 
-//    FIELDS
+    void addRecord(char* data)
+    {
+        size_t offset = 0;
+        for(auto& column : _columns)
+            offset += column.addRawValue(data+offset);
+        _recordsCnt++;
+    }
+
+    void addRecord(std::vector<std::string>& record)
+    {
+        if(record.size() != _columns.size())
+            throw std::runtime_error(_recordSizeErrorMsg);
+
+        for(int i = 0; i < record.size(); i++)
+            _columns[i].addStringValue(record[i]);
+        _recordsCnt++;
+    }
+
+    std::vector<RawData> getRawRecordData(size_t rowIdx)
+    {
+        std::vector<RawData> result;
+        for(auto& column : _columns)
+            result.push_back(column.getRaw(rowIdx));
+        return result;
+    }
+
+    std::vector<std::string> getRecordAsStrings(size_t rowIdx)
+    {
+        std::vector<std::string> result;
+        for(auto& column : _columns)
+            result.push_back(column.getStringValue(rowIdx));
+        return result;
+    }
+
 private:
     std::string _name;
-    std::vector<DataType> _data;
-    std::vector<time_t> _time;
+    std::vector<Column> _columns;
+    size_t _recordsCnt;
+
+private:
+    static const char* _recordSizeErrorMsg =
+            "Record size does not equal number of columns";
 };
 
 #endif //TIME_SERIES_DATA_READER_TIME_SERIES_H

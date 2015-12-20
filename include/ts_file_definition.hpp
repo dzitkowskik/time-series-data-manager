@@ -5,17 +5,21 @@
 #ifndef TIME_SERIES_DATA_READER_TS_FILE_DEFINITION_H
 #define TIME_SERIES_DATA_READER_TS_FILE_DEFINITION_H
 
+#include <vector>
+
 struct CSVFileDefinition
 {
-    std::vector<std::string> Header;
-    bool UseCustomHeader = false;
-    int TimeValueIndex = 0;
+    bool HasHeader = true;
     std::string Separator = ",";
+
+    std::vector<std::string> Header;
+    std::vector<DataType> Columns;
 };
 
 struct BinaryFileDefinition
 {
-    int NoTimeSeries;
+    std::vector<std::string> Header;
+    std::vector<DataType> Columns;
 };
 
 #endif //TIME_SERIES_DATA_READER_TS_FILE_DEFINITION_H
