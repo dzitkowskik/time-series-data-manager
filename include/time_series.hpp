@@ -95,6 +95,15 @@ public:
         return result;
     }
 
+    bool compare(TimeSeries& other)
+    {
+        if(_recordsCnt != other.getRecordsCnt()) return false;
+        for(int i = 0; i < getColumnsNumber(); i++)
+            if(!_columns[i].compare(other.getColumn(i)))
+                return false;
+        return true;
+    }
+
 private:
     std::string _name;
     std::vector<Column> _columns;

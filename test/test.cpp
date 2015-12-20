@@ -1,32 +1,36 @@
 #include "time_series_reader.hpp"
 #include <gtest/gtest.h>
+#include <time_series_writer.hpp>
 
 //#define DDJ_USE_BOOST 1
 
-TimeSeries<> GenerateFakeTimeSeries(std::string name, int size)
+TimeSeries GenerateFakeTimeSeries(std::string name, int N)
 {
-    TimeSeries<> result(name);
-    for(int i = 0; i < size; i++)
+    TimeSeries result(name);
+    result.init(std::vector<DataType> {DataType::d_time, DataType::d_double});
+
+    size_t size = result.getRecordSize();
+    char* data = new char[size];
+
+    for(time_t i = 0; i < N; i++)
     {
-        result.InsertTime(i);
-        result.InsertData((double)i * (i % 3));
+        double value = (double)i * (i % 3);
+        memcpy(data, &i, sizeof(time_t));
+        memcpy(data+sizeof(time_t), &value, sizeof(double));
+        result.addRecord(data);
     }
+
     return result;
 }
 
-TEST(TimeSeries, ReadWrite_CSV_Data_ToFile)
+TEST(TimeSeriesTest, ReadWrite_CSV_Data_ToFile)
 {
     auto testFile = File::GetTempFile();
-
-    const TimeSeries<> ts1 = GenerateFakeTimeSeries("fake1", 1000);
-    const TimeSeries<> ts2 = GenerateFakeTimeSeries("fake2", 1000);
+    TimeSeries fake = GenerateFakeTimeSeries("fake", 1000);
     CSVFileDefinition fileDefinition;
-    TimeSeries<>::WriteToCSV(testFile, std::vector<TimeSeries<>> {ts1, ts2}, fileDefinition);
+    TimeSeriesWriter().WriteToCSV(testFile, fake, fileDefinition);
     auto result = TimeSeriesReader().ReadFromCSV(testFile, fileDefinition);
-
-    EXPECT_TRUE(result[0].Equal(ts1));
-    EXPECT_TRUE(result[1].Equal(ts2));
-
+    EXPECT_TRUE(result.compare(fake));
     testFile.Delete();
 }
 
@@ -35,15 +39,18 @@ TEST(TimeSeries, ReadWrite_CSV_Data_FromFile)
     File realDataFile("../test/data/info.log");
     File testFile = File::GetTempFile();
     File testFile2 = File::GetTempFile();
-
     CSVFileDefinition fileDefinition;
+    fileDefinition.Columns = std::vector<DataType> {
+            DataType::d_time,
+            DataType::d_float,
+            DataType::d_float,
+            DataType::d_float
+    };
     auto data = TimeSeriesReader().ReadFromCSV(realDataFile, fileDefinition);
-    TimeSeries<>::WriteToCSV(testFile, data, fileDefinition);
+    TimeSeriesWriter().WriteToCSV(testFile, data, fileDefinition);
     auto data2 = TimeSeriesReader().ReadFromCSV(testFile, fileDefinition);
-    TimeSeries<>::WriteToCSV(testFile2, data2, fileDefinition);
-
+    TimeSeriesWriter().WriteToCSV(testFile2, data2, fileDefinition);
     EXPECT_TRUE(testFile.Compare(testFile2));
-
     testFile.Delete();
     testFile2.Delete();
 }
@@ -52,15 +59,14 @@ TEST(TimeSeries, ReadWrite_Binary_Data_ToFile)
 {
     auto testFile = File::GetTempFile();
 
-    const TimeSeries<> ts1 = GenerateFakeTimeSeries("fake1", 1000);
-    const TimeSeries<> ts2 = GenerateFakeTimeSeries("fake2", 1000);
-    BinaryFileDefinition fileDefinition { 2 };
-    TimeSeries<>::WriteToBinary(testFile, std::vector<TimeSeries<>> {ts1, ts2});
+    TimeSeries fake = GenerateFakeTimeSeries("fake", 1000);
+
+    BinaryFileDefinition fileDefinition;
+    fileDefinition.Header = std::vector<std::string> {"time", "value"};
+    fileDefinition.Columns = std::vector<DataType> { DataType::d_time, DataType::d_float };
+    TimeSeriesWriter().WriteToBinary(testFile, fake);
     auto result = TimeSeriesReader().ReadFromBinary(testFile, fileDefinition);
-
-    EXPECT_TRUE(result[0].Equal(ts1));
-    EXPECT_TRUE(result[1].Equal(ts2));
-
+    EXPECT_TRUE(result.compare(fake));
     testFile.Delete();
 }
 
@@ -68,6 +74,12 @@ TEST(TimeSeries, Read_CSV_Data_InMultipleParts_FromFile_CheckWithOnePartRead)
 {
 	File realDataFile("../test/data/info.log");
 	CSVFileDefinition fileDefinition;
+    fileDefinition.Columns = std::vector<DataType> {
+            DataType::d_time,
+            DataType::d_float,
+            DataType::d_float,
+            DataType::d_float
+    };
 
 	// read whole data 1000 rows
 	int allRows = 1000;
@@ -80,7 +92,6 @@ TEST(TimeSeries, Read_CSV_Data_InMultipleParts_FromFile_CheckWithOnePartRead)
 	for(int i = 0; i < partNo; i++)
 	{
 		auto partData = reader.ReadFromCSV(realDataFile, fileDefinition, partRowCnt);
-		for(int j = 0; j < partData.size(); j++)
-			EXPECT_TRUE(partData[j].Compare(wholeData[j], partRowCnt*i));
+        EXPECT_EQ(partData.getRecordAsStrings(0)[0], wholeData.getRecordAsStrings(partRowCnt*i)[0]);
 	}
 }
