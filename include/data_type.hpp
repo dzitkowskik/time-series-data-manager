@@ -18,7 +18,9 @@ enum class DataType
     d_int,
     d_unsigned,
     d_float,
-    d_double
+    d_double,
+    d_boolean,
+    d_short
 };
 
 inline size_t GetDataTypeSize(DataType type)
@@ -31,6 +33,8 @@ inline size_t GetDataTypeSize(DataType type)
         case DataType::d_unsigned: return sizeof(unsigned);
         case DataType::d_float: return sizeof(float);
         case DataType::d_double: return sizeof(double);
+        case DataType::d_boolean: return sizeof(bool);
+        case DataType::d_short: return sizeof(short);
     }
     return 0;
 }
@@ -42,5 +46,7 @@ template<> inline DataType GetDataType<int>() { return DataType::d_int; }
 template<> inline DataType GetDataType<unsigned>() { return DataType::d_unsigned; }
 template<> inline DataType GetDataType<float>() { return DataType::d_float; }
 template<> inline DataType GetDataType<double>() { return DataType::d_double; }
+template<> inline DataType GetDataType<bool>() { return DataType::d_boolean; }
+template<> inline DataType GetDataType<short>() { return DataType::d_short; }
 
 #endif /* DDJ_DATA_TYPE_HPP_ */

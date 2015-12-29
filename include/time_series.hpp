@@ -34,11 +34,12 @@ public:
             _columns.push_back(Column(type));
     }
 
-    const Column& getColumn(size_t colIdx) { _columns[colIdx]; }
+    const Column& getColumn(size_t colIdx) { return _columns[colIdx]; }
     std::string getName() { return _name; }
-    void setName(std::string name) { _name = name; }
     size_t getColumnsNumber() { return _columns.size(); }
     size_t getRecordsCnt() { return _recordsCnt; }
+
+    void setName(std::string name) { _name = name; }
 
     void setColumnNames(std::vector<std::string> names)
     {
