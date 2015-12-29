@@ -7,6 +7,7 @@
 
 #include "time_series_reader.hpp"
 #include <iomanip>
+#include <boost/make_shared.hpp>
 
 std::vector<std::string> ReadHeader(std::ifstream& inFile, CSVFileDefinition& definition)
 {
@@ -27,12 +28,12 @@ std::vector<std::string> ReadHeader(std::ifstream& inFile, CSVFileDefinition& de
 }
 
 
-TimeSeries TimeSeriesReader::ReadFromCSV(
+boost::shared_ptr<TimeSeries> TimeSeriesReader::ReadFromCSV(
         File& file, CSVFileDefinition& definition, const int maxRows)
 {
     // Initialize time series
-    TimeSeries result(file.GetPath());
-    result.init(definition.Columns);
+    auto result = boost::make_shared<TimeSeries>(file.GetPath());
+    result->init(definition.Columns);
 
     // Open file and set last position
     std::ifstream inputFile(file.GetPath(), std::ios::in);
@@ -44,7 +45,7 @@ TimeSeries TimeSeriesReader::ReadFromCSV(
         header = ReadHeader(inputFile, definition);
     else
         header = definition.Header;
-    result.setColumnNames(header);
+    result->setColumnNames(header);
 
     std::string line, token;
     size_t position = 0;
@@ -59,31 +60,32 @@ TimeSeries TimeSeriesReader::ReadFromCSV(
             line.erase(0, position + definition.Separator.length());
             record.push_back(token);
         } while(position != std::string::npos);
-        result.addRecord(record);
+        result->addRecord(record);
         record.clear();
     }
 
     _lastFilePosition = inputFile.tellg();
     inputFile.close();
+
     return result;
 }
 
-TimeSeries TimeSeriesReader::ReadFromBinary(
+boost::shared_ptr<TimeSeries> TimeSeriesReader::ReadFromBinary(
         File& file,
         BinaryFileDefinition& definition,
         const int maxRows)
 {
     // Initialize time series
-    TimeSeries result(file.GetPath());
-    result.init(definition.Columns);
-    size_t size = result.getRecordSize();
-    result.setColumnNames(definition.Header);
+    auto result = boost::make_shared<TimeSeries>(file.GetPath());
+    result->init(definition.Columns);
+    size_t size = result->getRecordSize();
+    result->setColumnNames(definition.Header);
 
     char* data = new char[size];
     int count = 0;
 
     while((count++ < maxRows) && (-1 != file.ReadRaw(data, size)))
-        result.addRecord(data);
+        result->addRecord(data);
 
     delete [] data;
     return result;

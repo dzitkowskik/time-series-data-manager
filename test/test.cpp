@@ -33,7 +33,7 @@ TEST(TimeSeriesTest, ReadWrite_CSV_Data_ToFile)
     fileDefinition.Columns = std::vector<DataType> { DataType::d_time, DataType::d_float };
     TimeSeriesWriter().WriteToCSV(testFile, fake, fileDefinition);
     auto result = TimeSeriesReader().ReadFromCSV(testFile, fileDefinition);
-    EXPECT_TRUE(result.compare(fake));
+    EXPECT_TRUE(result->compare(fake));
     testFile.Delete();
 }
 
@@ -50,9 +50,9 @@ TEST(TimeSeries, ReadWrite_CSV_Data_FromFile)
             DataType::d_float
     };
     auto data = TimeSeriesReader().ReadFromCSV(realDataFile, fileDefinition);
-    TimeSeriesWriter().WriteToCSV(testFile, data, fileDefinition);
+    TimeSeriesWriter().WriteToCSV(testFile, *data, fileDefinition);
     auto data2 = TimeSeriesReader().ReadFromCSV(testFile, fileDefinition);
-    TimeSeriesWriter().WriteToCSV(testFile2, data2, fileDefinition);
+    TimeSeriesWriter().WriteToCSV(testFile2, *data2, fileDefinition);
     EXPECT_TRUE(testFile.Compare(testFile2));
     testFile.Delete();
     testFile2.Delete();
@@ -69,7 +69,7 @@ TEST(TimeSeries, ReadWrite_Binary_Data_ToFile)
     fileDefinition.Columns = std::vector<DataType> { DataType::d_time, DataType::d_float };
     TimeSeriesWriter().WriteToBinary(testFile, fake);
     auto result = TimeSeriesReader().ReadFromBinary(testFile, fileDefinition);
-    EXPECT_TRUE(result.compare(fake));
+    EXPECT_TRUE(result->compare(fake));
     testFile.Delete();
 }
 
@@ -95,6 +95,6 @@ TEST(TimeSeries, Read_CSV_Data_InMultipleParts_FromFile_CheckWithOnePartRead)
 	for(int i = 0; i < partNo; i++)
 	{
 		auto partData = reader.ReadFromCSV(realDataFile, fileDefinition, partRowCnt);
-        EXPECT_EQ(partData.getRecordAsStrings(0)[0], wholeData.getRecordAsStrings(partRowCnt*i)[0]);
+        EXPECT_EQ(partData->getRecordAsStrings(0)[0], wholeData->getRecordAsStrings(partRowCnt*i)[0]);
 	}
 }

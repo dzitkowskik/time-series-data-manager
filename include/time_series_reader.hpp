@@ -12,6 +12,8 @@
 #include "file.hpp"
 #include "ts_file_definition.hpp"
 
+#include <boost/shared_ptr.hpp>
+
 class TimeSeriesReader
 {
 public:
@@ -21,12 +23,12 @@ public:
 	virtual ~TimeSeriesReader() {}
 
 public:
-	TimeSeries ReadFromCSV(
+	boost::shared_ptr<TimeSeries> ReadFromCSV(
 		File& file,
 		CSVFileDefinition& definition,
 		const int maxRows = INT32_MAX);
 
-	TimeSeries ReadFromBinary(
+	boost::shared_ptr<TimeSeries> ReadFromBinary(
 		File& file,
 		BinaryFileDefinition& definition,
 		const int maxRows = INT32_MAX);
