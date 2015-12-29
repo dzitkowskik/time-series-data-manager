@@ -15,15 +15,16 @@
 class TimeSeries
 {
 public:
-    TimeSeries() : _name("") {}
-    TimeSeries(std::string name) : _name(name) {}
+    TimeSeries() : _name(""), _recordsCnt(0) {}
+    TimeSeries(std::string name) : _name(name), _recordsCnt(0) {}
     ~TimeSeries() {}
     TimeSeries(const TimeSeries& other)
-            : _name(other._name), _columns(other._columns)
+            : _name(other._name), _columns(other._columns), _recordsCnt(other._recordsCnt)
     {}
     TimeSeries(TimeSeries&& other)
             : _name(std::move(other._name)),
-              _columns(std::move(other._columns))
+              _columns(std::move(other._columns)),
+              _recordsCnt(std::move(other._recordsCnt))
     {}
 
 public:

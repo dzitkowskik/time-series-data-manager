@@ -7,16 +7,17 @@
 TimeSeries GenerateFakeTimeSeries(std::string name, int N)
 {
     TimeSeries result(name);
-    result.init(std::vector<DataType> {DataType::d_time, DataType::d_double});
+    result.init(std::vector<DataType> {DataType::d_time, DataType::d_float});
+    result.setColumnNames(std::vector<std::string> {"time", "value"});
 
     size_t size = result.getRecordSize();
     char* data = new char[size];
 
     for(time_t i = 0; i < N; i++)
     {
-        double value = (double)i * (i % 3);
+        float value = (float)i * (i % 3);
         memcpy(data, &i, sizeof(time_t));
-        memcpy(data+sizeof(time_t), &value, sizeof(double));
+        memcpy(data+sizeof(time_t), &value, sizeof(float));
         result.addRecord(data);
     }
 
@@ -28,6 +29,8 @@ TEST(TimeSeriesTest, ReadWrite_CSV_Data_ToFile)
     auto testFile = File::GetTempFile();
     TimeSeries fake = GenerateFakeTimeSeries("fake", 1000);
     CSVFileDefinition fileDefinition;
+    fileDefinition.Header = std::vector<std::string> {"time", "value"};
+    fileDefinition.Columns = std::vector<DataType> { DataType::d_time, DataType::d_float };
     TimeSeriesWriter().WriteToCSV(testFile, fake, fileDefinition);
     auto result = TimeSeriesReader().ReadFromCSV(testFile, fileDefinition);
     EXPECT_TRUE(result.compare(fake));

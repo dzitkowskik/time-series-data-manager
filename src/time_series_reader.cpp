@@ -7,9 +7,6 @@
 
 #include "time_series_reader.hpp"
 #include <iomanip>
-#include <boost/lexical_cast.hpp>
-#include <ts_file_definition.hpp>
-#include <file.hpp>
 
 std::vector<std::string> ReadHeader(std::ifstream& inFile, CSVFileDefinition& definition)
 {
@@ -50,8 +47,9 @@ TimeSeries TimeSeriesReader::ReadFromCSV(
     result.setColumnNames(header);
 
     std::string line, token;
-    size_t position = 0, count;
-    while((count < maxRows) && std::getline(inputFile, line))
+    size_t position = 0;
+    int count = 0;
+    while((count++ < maxRows) && std::getline(inputFile, line))
     {
         std::vector<std::string> record;
         do
@@ -63,7 +61,6 @@ TimeSeries TimeSeriesReader::ReadFromCSV(
         } while(position != std::string::npos);
         result.addRecord(record);
         record.clear();
-        count++;
     }
 
     _lastFilePosition = inputFile.tellg();
@@ -83,9 +80,9 @@ TimeSeries TimeSeriesReader::ReadFromBinary(
     result.setColumnNames(definition.Header);
 
     char* data = new char[size];
-    int rows = 0;
+    int count = 0;
 
-    while((rows++ < maxRows) && (-1 != file.ReadRaw(data, size)))
+    while((count++ < maxRows) && (-1 != file.ReadRaw(data, size)))
         result.addRecord(data);
 
     delete [] data;

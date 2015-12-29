@@ -45,8 +45,6 @@ public:
         _data = new char[_allocatedSize];
         memcpy(_data, other._data, _actualSize);
     }
-
-    Column(Column&&) = default;
 public:
     std::string getName() { return _name; }
     size_t getSize() { return _actualSize; }
@@ -76,10 +74,15 @@ public:
 
     std::string getStringValue(size_t index)
     {
+        time_t time;
+        std::string timeString;
         switch (_type)
         {
             case DataType::d_time:
-                return boost::lexical_cast<std::string>(getValue<time_t>(index));
+                time = getValue<time_t>(index);
+                timeString = ctime(const_cast<const time_t*>(&time));
+                timeString.erase(timeString.length()-1);
+                return timeString;
             case DataType::d_char:
                 return boost::lexical_cast<std::string>(getValue<char>(index));
             case DataType::d_int:
@@ -125,27 +128,29 @@ public:
             expand();
 
         // set next value
-        T* actualData = (T*)(_data+_actualSize);
-        *actualData = value;
+        memcpy(_data+_actualSize, &value, _dataSize);
         _actualSize += _dataSize;
     }
 
     void addStringValue(std::string& value)
     {
+        std::tm time;
         switch (_type)
         {
             case DataType::d_time:
-                addValue(boost::lexical_cast<time_t>(value));
+                strptime(value.c_str(), "%c", &time);
+                time.tm_isdst = -1;
+                addValue<time_t>(mktime(&time)); break;
             case DataType::d_char:
-                addValue(boost::lexical_cast<char>(value));
+                addValue<char>(boost::lexical_cast<char>(value)); break;
             case DataType::d_int:
-                addValue(boost::lexical_cast<int>(value));
+                addValue<int>(boost::lexical_cast<int>(value)); break;
             case DataType::d_unsigned:
-                addValue(boost::lexical_cast<unsigned>(value));
+                addValue<unsigned>(boost::lexical_cast<unsigned>(value)); break;
             case DataType::d_float:
-                addValue(boost::lexical_cast<float>(value));
+                addValue<float>(boost::lexical_cast<float>(value)); break;
             case DataType::d_double:
-                addValue(boost::lexical_cast<double>(value));
+                addValue<double>(boost::lexical_cast<double>(value)); break;
         }
     }
 
@@ -166,7 +171,8 @@ public:
     {
         if(_type != other.getType() || _actualSize != other.getSize())
             return false;
-        return std::memcmp(_data, other.getData(), _actualSize) == 0;
+        auto result = std::memcmp(_data, other.getData(), _actualSize);
+        return result == 0;
     }
 
 private:
@@ -182,7 +188,7 @@ private:
     {
         auto oldSize = _allocatedSize;
         auto oldData = _data;
-        _allocatedSize = 2 * _allocatedSize + 4;
+        _allocatedSize = 2 * _allocatedSize + 4 * _dataSize;
         _data = new char[_allocatedSize];
         memcpy(_data, oldData, oldSize);
         delete [] oldData;
