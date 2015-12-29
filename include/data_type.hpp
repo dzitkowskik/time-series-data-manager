@@ -32,6 +32,7 @@ inline size_t GetDataTypeSize(DataType type)
         case DataType::d_float: return sizeof(float);
         case DataType::d_double: return sizeof(double);
     }
+    return 0;
 }
 
 template<typename T> inline DataType GetDataType();

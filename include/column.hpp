@@ -5,7 +5,7 @@
 #ifndef TIME_SERIES_DATA_READER_COLUMN_H
 #define TIME_SERIES_DATA_READER_COLUMN_H
 
-#include "data_type.h"
+#include "data_type.hpp"
 
 #include <stddef.h>
 #include <stdexcept>
@@ -46,11 +46,11 @@ public:
         memcpy(_data, other._data, _actualSize);
     }
 public:
-    std::string getName() { return _name; }
-    size_t getSize() { return _actualSize; }
-    size_t getDataSize() { return _dataSize; }
-    DataType getType() { return _type; }
-    char* getData() { return _data; }
+    std::string getName() const { return _name; }
+    size_t getSize() const { return _actualSize; }
+    size_t getDataSize() const { return _dataSize; }
+    DataType getType() const { return _type; }
+    char* getData() const { return _data; }
 
     template<typename T> T getValue(size_t index)
     {
@@ -65,7 +65,7 @@ public:
         return actualData[index];
     }
 
-    RawData getRaw(size_t index)
+    RawData getRaw(size_t index) const
     {
         checkIndex(index);
         size_t actualIndex = index * _dataSize;
@@ -194,7 +194,7 @@ private:
         delete [] oldData;
     }
 
-    void checkIndex(size_t index)
+    void checkIndex(size_t index) const
     {
         if((index * _dataSize) > _actualSize)
             throw std::runtime_error(_indexOutOfBoundsErrorMsg);
