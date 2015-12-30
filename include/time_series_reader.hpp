@@ -32,6 +32,7 @@ protected:
 class TimeSeriesReaderCSV : public TimeSeriesReader
 {
 public:
+	TimeSeriesReaderCSV() {}
 	TimeSeriesReaderCSV(CSVFileDefinition definition)
 		: _definition(definition)
 	{}
@@ -47,6 +48,7 @@ private:
 class TimeSeriesReaderBinary : public TimeSeriesReader
 {
 public:
+	TimeSeriesReaderBinary() {}
 	TimeSeriesReaderBinary(BinaryFileDefinition definition)
 			: _definition(definition)
 	{}
