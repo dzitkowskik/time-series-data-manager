@@ -23,18 +23,40 @@ public:
 	virtual ~TimeSeriesReader() {}
 
 public:
-	SharedTimeSeriesPtr ReadFromCSV(
-		File& file,
-		CSVFileDefinition& definition,
-		const int maxRows = INT32_MAX);
+	virtual SharedTimeSeriesPtr Read(File& file,	const int maxRows = INT32_MAX) = 0;
 
-	SharedTimeSeriesPtr ReadFromBinary(
-		File& file,
-		BinaryFileDefinition& definition,
-		const int maxRows = INT32_MAX);
+protected:
+	size_t _lastFilePosition;
+};
+
+class TimeSeriesReaderCSV : public TimeSeriesReader
+{
+public:
+	TimeSeriesReaderCSV(CSVFileDefinition definition)
+		: _definition(definition)
+	{}
+	virtual ~TimeSeriesReaderCSV() {}
+
+public:
+	SharedTimeSeriesPtr Read(File& file,	const int maxRows = INT32_MAX);
 
 private:
-	size_t _lastFilePosition;
+	CSVFileDefinition _definition;
+};
+
+class TimeSeriesReaderBinary : public TimeSeriesReader
+{
+public:
+	TimeSeriesReaderBinary(BinaryFileDefinition definition)
+			: _definition(definition)
+	{}
+	virtual ~TimeSeriesReaderBinary() {}
+
+public:
+	SharedTimeSeriesPtr Read(File& file, const int maxRows = INT32_MAX);
+
+private:
+	BinaryFileDefinition _definition;
 };
 
 #endif /* TIME_SERIES_READER_HPP_ */

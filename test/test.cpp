@@ -32,7 +32,7 @@ TEST(TimeSeriesTest, ReadWrite_CSV_Data_ToFile)
     fileDefinition.Header = std::vector<std::string> {"time", "value"};
     fileDefinition.Columns = std::vector<DataType> { DataType::d_time, DataType::d_float };
     TimeSeriesWriter().WriteToCSV(testFile, fake, fileDefinition);
-    auto result = TimeSeriesReader().ReadFromCSV(testFile, fileDefinition);
+    auto result = TimeSeriesReaderCSV(fileDefinition).Read(testFile);
     EXPECT_TRUE(result->compare(fake));
     testFile.Delete();
 }
@@ -49,9 +49,9 @@ TEST(TimeSeries, ReadWrite_CSV_Data_FromFile)
             DataType::d_float,
             DataType::d_float
     };
-    auto data = TimeSeriesReader().ReadFromCSV(realDataFile, fileDefinition);
+    auto data = TimeSeriesReaderCSV(fileDefinition).Read(realDataFile);
     TimeSeriesWriter().WriteToCSV(testFile, *data, fileDefinition);
-    auto data2 = TimeSeriesReader().ReadFromCSV(testFile, fileDefinition);
+    auto data2 = TimeSeriesReaderCSV(fileDefinition).Read(testFile);
     TimeSeriesWriter().WriteToCSV(testFile2, *data2, fileDefinition);
     EXPECT_TRUE(testFile.Compare(testFile2));
     testFile.Delete();
@@ -68,7 +68,7 @@ TEST(TimeSeries, ReadWrite_Binary_Data_ToFile)
     fileDefinition.Header = std::vector<std::string> {"time", "value"};
     fileDefinition.Columns = std::vector<DataType> { DataType::d_time, DataType::d_float };
     TimeSeriesWriter().WriteToBinary(testFile, fake);
-    auto result = TimeSeriesReader().ReadFromBinary(testFile, fileDefinition);
+    auto result = TimeSeriesReaderBinary(fileDefinition).Read(testFile);
     EXPECT_TRUE(result->compare(fake));
     testFile.Delete();
 }
@@ -86,15 +86,15 @@ TEST(TimeSeries, Read_CSV_Data_InMultipleParts_FromFile_CheckWithOnePartRead)
 
 	// read whole data 1000 rows
 	int allRows = 1000;
-	auto wholeData = TimeSeriesReader().ReadFromCSV(realDataFile, fileDefinition, allRows);
+	auto wholeData = TimeSeriesReaderCSV(fileDefinition).Read(realDataFile, allRows);
 
 	// compare with reading 5 times 200 rows
 	int partNo = 5;
 	int partRowCnt = allRows / partNo;
-	TimeSeriesReader reader;
+    TimeSeriesReaderCSV reader(fileDefinition);
 	for(int i = 0; i < partNo; i++)
 	{
-		auto partData = reader.ReadFromCSV(realDataFile, fileDefinition, partRowCnt);
+		auto partData = reader.Read(realDataFile, partRowCnt);
         EXPECT_EQ(partData->getRecordAsStrings(0)[0], wholeData->getRecordAsStrings(partRowCnt*i)[0]);
 	}
 }

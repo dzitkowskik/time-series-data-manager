@@ -27,13 +27,12 @@ std::vector<std::string> ReadHeader(std::ifstream& inFile, CSVFileDefinition& de
     return result;
 }
 
-
-SharedTimeSeriesPtr TimeSeriesReader::ReadFromCSV(
-        File& file, CSVFileDefinition& definition, const int maxRows)
+SharedTimeSeriesPtr TimeSeriesReaderCSV::Read(
+        File& file, const int maxRows)
 {
     // Initialize time series
     auto result = boost::make_shared<TimeSeries>(file.GetPath());
-    result->init(definition.Columns);
+    result->init(_definition.Columns);
 
     // Open file and set last position
     std::ifstream inputFile(file.GetPath(), std::ios::in);
@@ -41,10 +40,10 @@ SharedTimeSeriesPtr TimeSeriesReader::ReadFromCSV(
 
     // Read header
     std::vector<std::string> header;
-    if(definition.HasHeader && _lastFilePosition == 0)
-        header = ReadHeader(inputFile, definition);
+    if(_definition.HasHeader && _lastFilePosition == 0)
+        header = ReadHeader(inputFile, _definition);
     else
-        header = definition.Header;
+        header = _definition.Header;
     result->setColumnNames(header);
 
     std::string line, token;
@@ -55,9 +54,9 @@ SharedTimeSeriesPtr TimeSeriesReader::ReadFromCSV(
         std::vector<std::string> record;
         do
         {
-            position = line.find(definition.Separator);
+            position = line.find(_definition.Separator);
             token = line.substr(0, position);
-            line.erase(0, position + definition.Separator.length());
+            line.erase(0, position + _definition.Separator.length());
             record.push_back(token);
         } while(position != std::string::npos);
         result->addRecord(record);
@@ -70,16 +69,15 @@ SharedTimeSeriesPtr TimeSeriesReader::ReadFromCSV(
     return result;
 }
 
-SharedTimeSeriesPtr TimeSeriesReader::ReadFromBinary(
+SharedTimeSeriesPtr TimeSeriesReaderBinary::Read(
         File& file,
-        BinaryFileDefinition& definition,
         const int maxRows)
 {
     // Initialize time series
     auto result = boost::make_shared<TimeSeries>(file.GetPath());
-    result->init(definition.Columns);
+    result->init(_definition.Columns);
     size_t size = result->getRecordSize();
-    result->setColumnNames(definition.Header);
+    result->setColumnNames(_definition.Header);
 
     char* data = new char[size];
     int count = 0;
