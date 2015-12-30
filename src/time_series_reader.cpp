@@ -28,7 +28,7 @@ std::vector<std::string> ReadHeader(std::ifstream& inFile, CSVFileDefinition& de
 }
 
 
-boost::shared_ptr<TimeSeries> TimeSeriesReader::ReadFromCSV(
+SharedTimeSeriesPtr TimeSeriesReader::ReadFromCSV(
         File& file, CSVFileDefinition& definition, const int maxRows)
 {
     // Initialize time series
@@ -70,7 +70,7 @@ boost::shared_ptr<TimeSeries> TimeSeriesReader::ReadFromCSV(
     return result;
 }
 
-boost::shared_ptr<TimeSeries> TimeSeriesReader::ReadFromBinary(
+SharedTimeSeriesPtr TimeSeriesReader::ReadFromBinary(
         File& file,
         BinaryFileDefinition& definition,
         const int maxRows)

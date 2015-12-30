@@ -12,6 +12,9 @@
 #include <limits>
 #include <algorithm>
 
+class TimeSeries;
+using SharedTimeSeriesPtr = boost::shared_ptr<TimeSeries>;
+
 class TimeSeries
 {
 public:

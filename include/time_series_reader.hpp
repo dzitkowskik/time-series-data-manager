@@ -23,12 +23,12 @@ public:
 	virtual ~TimeSeriesReader() {}
 
 public:
-	boost::shared_ptr<TimeSeries> ReadFromCSV(
+	SharedTimeSeriesPtr ReadFromCSV(
 		File& file,
 		CSVFileDefinition& definition,
 		const int maxRows = INT32_MAX);
 
-	boost::shared_ptr<TimeSeries> ReadFromBinary(
+	SharedTimeSeriesPtr ReadFromBinary(
 		File& file,
 		BinaryFileDefinition& definition,
 		const int maxRows = INT32_MAX);
