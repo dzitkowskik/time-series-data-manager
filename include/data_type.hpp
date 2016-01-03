@@ -5,11 +5,15 @@
  *      Author: Karol Dzitkowski
  */
 
+#pragma once
 #ifndef DDJ_DATA_TYPE_HPP_
 #define DDJ_DATA_TYPE_HPP_
 
+#include "enum_parser.hpp"
+
 #include <cstring>
 #include <time.h>
+#include <string>
 
 enum class DataType
 {
@@ -48,5 +52,18 @@ template<> inline DataType GetDataType<float>() { return DataType::d_float; }
 template<> inline DataType GetDataType<double>() { return DataType::d_double; }
 template<> inline DataType GetDataType<bool>() { return DataType::d_boolean; }
 template<> inline DataType GetDataType<short>() { return DataType::d_short; }
+
+template<> inline
+EnumParser<DataType>::EnumParser()
+{
+    _enumMap["time"] = DataType::d_time;
+    _enumMap["char"] = DataType::d_char;
+    _enumMap["int"] = DataType::d_int;
+    _enumMap["unsigned"] = DataType::d_unsigned;
+    _enumMap["float"] = DataType::d_float;
+    _enumMap["double"] = DataType::d_double;
+    _enumMap["bool"] = DataType::d_boolean;
+    _enumMap["short"] = DataType::d_short;
+}
 
 #endif /* DDJ_DATA_TYPE_HPP_ */

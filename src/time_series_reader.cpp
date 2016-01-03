@@ -135,3 +135,20 @@ void TimeSeriesReaderBinary::Write(File& file, TimeSeries& series)
 
     delete [] data;
 }
+
+FileDefinition TimeSeriesReader::ReadFileDefinition(File& file)
+{
+	FileDefinition result;
+	std::ifstream inputFile(file.GetPath(), std::ios::in);
+	std::string  name, type;
+	EnumParser<DataType> typeParser;
+
+	while(std::getline(inputFile, name, ',') && std::getline(inputFile, type, ','))
+	{
+		result.Header.push_back(name);
+		result.Columns.push_back(typeParser.Parse(type));
+	}
+
+	inputFile.close();
+	return result;
+}

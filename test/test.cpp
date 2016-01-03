@@ -98,3 +98,9 @@ TEST(TimeSeries, Read_CSV_Data_InMultipleParts_FromFile_CheckWithOnePartRead)
         EXPECT_EQ(partData->getRecordAsStrings(0)[0], wholeData->getRecordAsStrings(partRowCnt*i)[0]);
 	}
 }
+
+TEST(TimeSeries, Read_Header_File)
+{
+	File headerFile("../test/data/info.header");
+	auto fileDef = TimeSeriesReader::ReadFileDefinition(headerFile);
+}

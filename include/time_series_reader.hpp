@@ -32,6 +32,9 @@ public:
 	virtual SharedTimeSeriesPtr Read(File& file, const int maxRows = INT32_MAX) = 0;
 	virtual void Write(File& file, TimeSeries& series) = 0;
 
+public:
+	static FileDefinition ReadFileDefinition(File& file);
+
 protected:
 	size_t _lastFilePosition;
 };
