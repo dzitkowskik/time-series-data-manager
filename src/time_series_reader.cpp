@@ -140,11 +140,16 @@ FileDefinition TimeSeriesReader::ReadFileDefinition(File& file)
 {
 	FileDefinition result;
 	std::ifstream inputFile(file.GetPath(), std::ios::in);
-	std::string  name, type;
+	std::string line, name, type;
 	EnumParser<DataType> typeParser;
 
-	while(std::getline(inputFile, name, ',') && std::getline(inputFile, type, ','))
+	while(std::getline(inputFile, line))
 	{
+        auto position = line.find(',');
+        name = line.substr(0, position);
+        line.erase(0, position + 1);
+        type = line;
+
 		result.Header.push_back(name);
 		result.Columns.push_back(typeParser.Parse(type));
 	}

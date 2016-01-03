@@ -1,4 +1,4 @@
-timestamp,time_t
+timestamp,time
 CORE VOLTAGE,float
 CPU TEMP,float
 GPU TEMP,float

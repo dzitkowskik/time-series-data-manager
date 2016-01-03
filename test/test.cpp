@@ -103,4 +103,12 @@ TEST(TimeSeries, Read_Header_File)
 {
 	File headerFile("../test/data/info.header");
 	auto fileDef = TimeSeriesReader::ReadFileDefinition(headerFile);
+
+    // check
+    EXPECT_EQ(DataType::d_time, fileDef.Columns[0]);
+    EXPECT_EQ(DataType::d_float, fileDef.Columns[1]);
+    EXPECT_EQ(DataType::d_float, fileDef.Columns[2]);
+    EXPECT_EQ(DataType::d_float, fileDef.Columns[3]);
+    EXPECT_EQ("timestamp", fileDef.Header[0]);
+    EXPECT_EQ("GPU TEMP", fileDef.Header[3]);
 }
