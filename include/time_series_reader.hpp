@@ -12,7 +12,7 @@
 #include "file.hpp"
 #include "ts_file_definition.hpp"
 
-#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 class TimeSeriesReader;
 using SharedTimeSeriesReader = boost::shared_ptr<TimeSeriesReader>;
@@ -55,9 +55,16 @@ public:
 	SharedTimeSeriesPtr Read(File& file,	const int maxRows = INT32_MAX);
 	void Write(File& file, TimeSeries& series);
 
+public:
+	static boost::shared_ptr<TimeSeriesReaderCSV> make_shared(CSVFileDefinition definition)
+	{
+		return boost::make_shared<TimeSeriesReaderCSV>(definition);
+	}
+
 private:
 	CSVFileDefinition _definition;
 };
+
 
 class TimeSeriesReaderBinary : public TimeSeriesReader
 {
@@ -74,6 +81,12 @@ public:
 public:
 	SharedTimeSeriesPtr Read(File& file, const int maxRows = INT32_MAX);
 	void Write(File& file, TimeSeries& series);
+
+public:
+	static boost::shared_ptr<TimeSeriesReaderBinary> make_shared(BinaryFileDefinition definition)
+	{
+		return boost::make_shared<TimeSeriesReaderBinary>(definition);
+	}
 
 private:
 	BinaryFileDefinition _definition;

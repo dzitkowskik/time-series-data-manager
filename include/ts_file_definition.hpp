@@ -21,6 +21,10 @@ struct CSVFileDefinition : FileDefinition
 
 struct BinaryFileDefinition : FileDefinition
 {
+	BinaryFileDefinition(){}
+	~BinaryFileDefinition(){}
+	BinaryFileDefinition(const BinaryFileDefinition&) = default;
+	BinaryFileDefinition(const FileDefinition& def) : FileDefinition(def) {};
 };
 
 #endif //TIME_SERIES_DATA_READER_TS_FILE_DEFINITION_H
