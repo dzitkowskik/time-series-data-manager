@@ -175,6 +175,15 @@ public:
         return result == 0;
     }
 
+    void reserveSize(size_t size)
+    {
+    	if(_allocatedSize > 0)
+    		delete [] _data;
+    	_data = new char[size];
+    	_allocatedSize = size;
+    	_actualSize = size;
+    }
+
 private:
     void init(size_t initSize)
     {

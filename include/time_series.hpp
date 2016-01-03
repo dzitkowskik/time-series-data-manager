@@ -6,11 +6,13 @@
 #define TIME_SERIES_DATA_READER_TIME_SERIES_H
 
 #include "column.hpp"
+#include "ts_file_definition.hpp"
 
 #include <string>
 #include <vector>
 #include <limits>
 #include <algorithm>
+#include <boost/make_shared.hpp>
 
 class TimeSeries;
 using SharedTimeSeriesPtr = boost::shared_ptr<TimeSeries>;
@@ -37,7 +39,7 @@ public:
             _columns.push_back(Column(type));
     }
 
-    const Column& getColumn(size_t colIdx) { return _columns[colIdx]; }
+    Column& getColumn(size_t colIdx) { return _columns[colIdx]; }
     std::string getName() { return _name; }
     size_t getColumnsNumber() { return _columns.size(); }
     size_t getRecordsCnt() { return _recordsCnt; }
@@ -107,6 +109,15 @@ public:
             if(!_columns[i].compare(other.getColumn(i)))
                 return false;
         return true;
+    }
+
+public:
+    static SharedTimeSeriesPtr make_shared(FileDefinition& def)
+    {
+    	auto ts = boost::make_shared<TimeSeries>();
+    	ts->init(def.Columns);
+    	ts->setColumnNames(def.Header);
+    	return ts;
     }
 
 private:

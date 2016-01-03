@@ -7,19 +7,20 @@
 
 #include <vector>
 
-struct CSVFileDefinition
+struct FileDefinition
 {
-    bool HasHeader = true;
-    std::string Separator = ",";
-
     std::vector<std::string> Header;
     std::vector<DataType> Columns;
 };
 
-struct BinaryFileDefinition
+struct CSVFileDefinition : FileDefinition
 {
-    std::vector<std::string> Header;
-    std::vector<DataType> Columns;
+    bool HasHeader = true;
+    std::string Separator = ",";
+};
+
+struct BinaryFileDefinition : FileDefinition
+{
 };
 
 #endif //TIME_SERIES_DATA_READER_TS_FILE_DEFINITION_H

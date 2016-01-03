@@ -14,6 +14,9 @@
 
 #include <boost/shared_ptr.hpp>
 
+class TimeSeriesReader;
+using SharedTimeSeriesReader = boost::shared_ptr<TimeSeriesReader>;
+
 class TimeSeriesReader
 {
 public:
@@ -21,9 +24,12 @@ public:
 		: _lastFilePosition(0)
 	{}
 	virtual ~TimeSeriesReader() {}
+	TimeSeriesReader(const TimeSeriesReader& other)
+		: _lastFilePosition(other._lastFilePosition)
+	{}
 
 public:
-	virtual SharedTimeSeriesPtr Read(File& file,	const int maxRows = INT32_MAX) = 0;
+	virtual SharedTimeSeriesPtr Read(File& file, const int maxRows = INT32_MAX) = 0;
 
 protected:
 	size_t _lastFilePosition;
@@ -37,6 +43,9 @@ public:
 		: _definition(definition)
 	{}
 	virtual ~TimeSeriesReaderCSV() {}
+	TimeSeriesReaderCSV(const TimeSeriesReaderCSV& other)
+		: _definition(other._definition)
+	{}
 
 public:
 	SharedTimeSeriesPtr Read(File& file,	const int maxRows = INT32_MAX);
@@ -53,6 +62,9 @@ public:
 			: _definition(definition)
 	{}
 	virtual ~TimeSeriesReaderBinary() {}
+	TimeSeriesReaderBinary(const TimeSeriesReaderBinary& other)
+		: _definition(other._definition)
+	{}
 
 public:
 	SharedTimeSeriesPtr Read(File& file, const int maxRows = INT32_MAX);
