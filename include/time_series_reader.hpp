@@ -24,6 +24,7 @@ public:
 
 public:
 	virtual SharedTimeSeriesPtr Read(File& file,	const int maxRows = INT32_MAX) = 0;
+	virtual void Write(File& file, TimeSeries& series) = 0;
 
 protected:
 	size_t _lastFilePosition;
@@ -40,6 +41,7 @@ public:
 
 public:
 	SharedTimeSeriesPtr Read(File& file,	const int maxRows = INT32_MAX);
+	void Write(File& file, TimeSeries& series);
 
 private:
 	CSVFileDefinition _definition;
@@ -56,6 +58,7 @@ public:
 
 public:
 	SharedTimeSeriesPtr Read(File& file, const int maxRows = INT32_MAX);
+	void Write(File& file, TimeSeries& series);
 
 private:
 	BinaryFileDefinition _definition;

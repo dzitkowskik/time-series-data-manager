@@ -1,6 +1,5 @@
 #include "time_series_reader.hpp"
 #include <gtest/gtest.h>
-#include <time_series_writer.hpp>
 
 //#define DDJ_USE_BOOST 1
 
@@ -31,8 +30,9 @@ TEST(TimeSeriesTest, ReadWrite_CSV_Data_ToFile)
     CSVFileDefinition fileDefinition;
     fileDefinition.Header = std::vector<std::string> {"time", "value"};
     fileDefinition.Columns = std::vector<DataType> { DataType::d_time, DataType::d_float };
-    TimeSeriesWriter().WriteToCSV(testFile, fake, fileDefinition);
-    auto result = TimeSeriesReaderCSV(fileDefinition).Read(testFile);
+    TimeSeriesReaderCSV reader(fileDefinition);
+    reader.Write(testFile, fake);
+    auto result = reader.Read(testFile);
     EXPECT_TRUE(result->compare(fake));
     testFile.Delete();
 }
@@ -50,9 +50,9 @@ TEST(TimeSeries, ReadWrite_CSV_Data_FromFile)
             DataType::d_float
     };
     auto data = TimeSeriesReaderCSV(fileDefinition).Read(realDataFile);
-    TimeSeriesWriter().WriteToCSV(testFile, *data, fileDefinition);
+    TimeSeriesReaderCSV(fileDefinition).Write(testFile, *data);
     auto data2 = TimeSeriesReaderCSV(fileDefinition).Read(testFile);
-    TimeSeriesWriter().WriteToCSV(testFile2, *data2, fileDefinition);
+    TimeSeriesReaderCSV(fileDefinition).Write(testFile2, *data2);
     EXPECT_TRUE(testFile.Compare(testFile2));
     testFile.Delete();
     testFile2.Delete();
@@ -67,7 +67,7 @@ TEST(TimeSeries, ReadWrite_Binary_Data_ToFile)
     BinaryFileDefinition fileDefinition;
     fileDefinition.Header = std::vector<std::string> {"time", "value"};
     fileDefinition.Columns = std::vector<DataType> { DataType::d_time, DataType::d_float };
-    TimeSeriesWriter().WriteToBinary(testFile, fake);
+    TimeSeriesReaderBinary(fileDefinition).Write(testFile, fake);
     auto result = TimeSeriesReaderBinary(fileDefinition).Read(testFile);
     EXPECT_TRUE(result->compare(fake));
     testFile.Delete();

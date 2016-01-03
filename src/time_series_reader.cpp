@@ -88,3 +88,50 @@ SharedTimeSeriesPtr TimeSeriesReaderBinary::Read(
     delete [] data;
     return result;
 }
+
+void WriteLine(
+        std::ofstream& ofstream,
+        std::vector<std::string> lineItems,
+        CSVFileDefinition& definition)
+{
+    std::string line;
+    for(int i = 0; i < lineItems.size(); i++)
+    {
+        line += lineItems[i];
+        if(i < lineItems.size()-1) line += definition.Separator;
+    }
+    ofstream << line << std::endl;
+}
+
+void TimeSeriesReaderCSV::Write(File& file, TimeSeries& series)
+{
+    std::ofstream outFile(file.GetPath(), std::ios::out);
+    // Write header as column names
+    if(_definition.HasHeader)
+        WriteLine(outFile, series.getColumnNames(), _definition);
+
+    for(size_t i = 0; i < series.getRecordsCnt(); i++)
+        WriteLine(outFile, series.getRecordAsStrings(i), _definition);
+
+    outFile.close();
+}
+
+void TimeSeriesReaderBinary::Write(File& file, TimeSeries& series)
+{
+    size_t size = series.getRecordSize();
+    char* data = new char[size];
+
+    for(size_t i = 0; i < series.getRecordsCnt(); i++)
+    {
+        size_t offset = 0;
+        for(auto& rawData : series.getRawRecordData(i))
+        {
+            memcpy(data+offset, rawData.Data, rawData.Size);
+            offset += rawData.Size;
+        }
+        if (file.WriteRaw(data, size))
+            throw std::runtime_error("Error while writting to a file");
+    }
+
+    delete [] data;
+}
