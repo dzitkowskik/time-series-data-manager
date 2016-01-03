@@ -1,0 +1,4 @@
+timestamp,time_t
+CORE VOLTAGE,float
+CPU TEMP,float
+GPU TEMP,float
