@@ -75,7 +75,7 @@ public:
     std::string getStringValue(size_t index)
     {
         time_t time;
-        std::string timeString;
+        std::string timeString = "";
         switch (_type)
         {
             case DataType::d_time:

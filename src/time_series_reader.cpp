@@ -129,6 +129,7 @@ void TimeSeriesReaderBinary::Write(File& file, TimeSeries& series)
             memcpy(data+offset, rawData.Data, rawData.Size);
             offset += rawData.Size;
         }
+//        printf("Try to write %d bytes to file %s", size, file.GetPath().c_str());
         if (file.WriteRaw(data, size))
             throw std::runtime_error("Error while writting to a file");
     }

@@ -23,7 +23,7 @@ class File
 public:
     File(const char* path) : _path(path), _opened(false) {}
     File(std::string path) : _path(path), _opened(false) {}
-    ~File(){}
+    ~File(){ Close(); }
     File(const File& other) : _path(other._path), _opened(false) {}
     File(File&& other) : _path(std::move(other._path)), _opened(false) {}
 

@@ -17,6 +17,11 @@ struct CSVFileDefinition : FileDefinition
 {
     bool HasHeader = true;
     std::string Separator = ",";
+
+    CSVFileDefinition(){}
+	~CSVFileDefinition(){}
+	CSVFileDefinition(const CSVFileDefinition&) = default;
+	CSVFileDefinition(const FileDefinition& def) : FileDefinition(def) {};
 };
 
 struct BinaryFileDefinition : FileDefinition

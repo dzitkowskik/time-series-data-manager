@@ -43,6 +43,7 @@ public:
     std::string getName() { return _name; }
     size_t getColumnsNumber() { return _columns.size(); }
     size_t getRecordsCnt() { return _recordsCnt; }
+    void updateRecordsCnt() { _recordsCnt = _columns[0].getSize() / _columns[0].getDataSize(); }
 
     void setName(std::string name) { _name = name; }
 
@@ -109,6 +110,19 @@ public:
             if(!_columns[i].compare(other.getColumn(i)))
                 return false;
         return true;
+    }
+
+    void print(int n)
+    {
+    	printf("TimeSeries %s:\n", this->getName().c_str());
+    	for(int i = 0; i < n && i < this->getRecordsCnt(); i++)
+    	{
+			printf("Row %d: ", i);
+			for(auto& row : this->getRecordAsStrings(i))
+				printf("%s, ", row.c_str());
+			printf("\n");
+    	}
+    	printf("--------\n");
     }
 
 public:
