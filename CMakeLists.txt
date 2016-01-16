@@ -25,6 +25,4 @@ set(SOURCE_FILES_NO_MAIN
 add_executable(data_test ${SOURCE_FILES})
 add_library(data ${SOURCE_FILES_NO_MAIN})
 
-FIND_LIBRARY(GTEST_LIBRARY gtest /usr/local/lib)
-TARGET_LINK_LIBRARIES(data_test ${GTEST_LIBRARY} pthread boost_thread boost_filesystem boost_system)
-
+TARGET_LINK_LIBRARIES(data_test gtest pthread boost_thread boost_filesystem boost_system)
