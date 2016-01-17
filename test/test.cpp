@@ -121,7 +121,7 @@ TEST(TimeSeries, Read_Binary_With_Header_File)
     File realDataFile("../test/data/info.inf");
     auto result = TimeSeriesReaderBinary(fileDef, 4).Read(realDataFile);
 
-    result->print(5);
+//    result->print(5);
 }
 
 TEST(TimeSeries, Read_CSV_With_Header_File_Write_And_Compare)
@@ -136,4 +136,22 @@ TEST(TimeSeries, Read_CSV_With_Header_File_Write_And_Compare)
     TimeSeriesReaderCSV(fileDef).Write(testFile, *result);
 
     EXPECT_TRUE( realDataFile.Compare(testFile) );
+}
+
+TEST(TimeSeries, Read_Binary_With_Header_File_Write_And_Compare)
+{
+    File testFile = File::GetTempFile();
+    File headerFile("../test/data/info.header");
+    auto fileDef = TimeSeriesReader::ReadFileDefinition(headerFile);
+
+    File realDataFile("../test/data/info.inf");
+    auto result = TimeSeriesReaderBinary(fileDef, 4).Read(realDataFile);
+
+//    result->print(100000);
+
+    TimeSeriesReaderBinary(fileDef, 4).Write(testFile, *result);
+
+    auto another = TimeSeriesReaderBinary(fileDef, 4).Read(testFile);
+
+    EXPECT_TRUE( another->compare(*result) );
 }

@@ -129,6 +129,7 @@ void TimeSeriesReaderBinary::Write(File& file, TimeSeries& series)
     for(size_t i = 0; i < series.getRecordsCnt(); i++)
     {
         size_t offset = 0;
+        memset(data, 0, size);
         for(auto& rawData : series.getRawRecordData(i))
         {
             memcpy(data+offset, rawData.Data, rawData.Size);
