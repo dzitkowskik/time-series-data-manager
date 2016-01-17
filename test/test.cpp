@@ -112,3 +112,14 @@ TEST(TimeSeries, Read_Header_File)
     EXPECT_EQ("timestamp", fileDef.Header[0]);
     EXPECT_EQ("GPU TEMP", fileDef.Header[3]);
 }
+
+TEST(TimeSeries, Read_Binary_With_Header_File)
+{
+    File headerFile("../test/data/info.header");
+    auto fileDef = TimeSeriesReader::ReadFileDefinition(headerFile);
+
+    File realDataFile("../test/data/info.inf");
+    auto result = TimeSeriesReaderBinary(fileDef, 4).Read(realDataFile);
+
+    result->print(5);
+}

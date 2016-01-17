@@ -77,6 +77,8 @@ SharedTimeSeriesPtr TimeSeriesReaderBinary::Read(
     auto result = boost::make_shared<TimeSeries>(file.GetPath());
     result->init(_definition.Columns);
     size_t size = result->getRecordSize();
+    size += _alignment;
+//    printf("size = %lu\n", size);
     result->setColumnNames(_definition.Header);
 
     char* data = new char[size];
@@ -118,7 +120,7 @@ void TimeSeriesReaderCSV::Write(File& file, TimeSeries& series)
 
 void TimeSeriesReaderBinary::Write(File& file, TimeSeries& series)
 {
-    size_t size = series.getRecordSize();
+    size_t size = series.getRecordSize() + _alignment;
     char* data = new char[size];
 
     for(size_t i = 0; i < series.getRecordsCnt(); i++)

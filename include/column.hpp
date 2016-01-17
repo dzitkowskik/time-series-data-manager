@@ -88,11 +88,15 @@ public:
             case DataType::d_int:
                 return boost::lexical_cast<std::string>(getValue<int>(index));
             case DataType::d_unsigned:
-                return boost::lexical_cast<std::string>(getValue<unsigned >(index));
+                return boost::lexical_cast<std::string>(getValue<unsigned>(index));
             case DataType::d_float:
                 return boost::lexical_cast<std::string>(getValue<float>(index));
             case DataType::d_double:
                 return boost::lexical_cast<std::string>(getValue<double>(index));
+            case DataType::d_boolean:
+                return boost::lexical_cast<std::string>(getValue<bool>(index));
+            case DataType::d_short:
+                return boost::lexical_cast<std::string>(getValue<short>(index));
         }
     }
 
@@ -114,6 +118,10 @@ public:
                 return static_cast<T>(*((float*)(_data+actualIndex)));
             case DataType::d_double:
                 return static_cast<T>(*((double*)(_data+actualIndex)));
+            case DataType::d_boolean:
+                return static_cast<T>(*((bool*)(_data+actualIndex)));
+            case DataType::d_short:
+                return static_cast<T>(*((short*)(_data+actualIndex)));
         }
     }
 
@@ -150,6 +158,10 @@ public:
             case DataType::d_float:
                 addValue<float>(boost::lexical_cast<float>(value)); break;
             case DataType::d_double:
+                addValue<double>(boost::lexical_cast<double>(value)); break;
+            case DataType::d_boolean:
+                addValue<float>(boost::lexical_cast<float>(value)); break;
+            case DataType::d_short:
                 addValue<double>(boost::lexical_cast<double>(value)); break;
         }
     }

@@ -69,13 +69,13 @@ private:
 class TimeSeriesReaderBinary : public TimeSeriesReader
 {
 public:
-	TimeSeriesReaderBinary() {}
-	TimeSeriesReaderBinary(BinaryFileDefinition definition)
-			: _definition(definition)
+	TimeSeriesReaderBinary() : _alignment(0) {}
+	TimeSeriesReaderBinary(BinaryFileDefinition definition, size_t alignment = 0)
+			: _definition(definition), _alignment(alignment)
 	{}
 	virtual ~TimeSeriesReaderBinary() {}
 	TimeSeriesReaderBinary(const TimeSeriesReaderBinary& other)
-		: _definition(other._definition)
+		: _definition(other._definition), _alignment(other._alignment)
 	{}
 
 public:
@@ -83,13 +83,14 @@ public:
 	void Write(File& file, TimeSeries& series);
 
 public:
-	static boost::shared_ptr<TimeSeriesReaderBinary> make_shared(BinaryFileDefinition definition)
+	static boost::shared_ptr<TimeSeriesReaderBinary> make_shared(BinaryFileDefinition definition, size_t alignment = 0)
 	{
-		return boost::make_shared<TimeSeriesReaderBinary>(definition);
+		return boost::make_shared<TimeSeriesReaderBinary>(definition, alignment);
 	}
 
 private:
 	BinaryFileDefinition _definition;
+	size_t _alignment;
 };
 
 #endif /* TIME_SERIES_READER_HPP_ */

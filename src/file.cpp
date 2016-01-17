@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <fcntl.h>
+#include <unistd.h>
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
@@ -64,7 +65,8 @@ bool File::Delete()
 
 File File::GetTempFile()
 {
-    return File(std::tmpnam(nullptr));
+    std::string name = "/tmp/ddj_temp_XXXXXX";
+    return File(mktemp(const_cast<char*>(name.c_str())));
 }
 
 int File::ReadRaw(char* data, size_t size)
