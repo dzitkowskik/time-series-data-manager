@@ -123,3 +123,17 @@ TEST(TimeSeries, Read_Binary_With_Header_File)
 
     result->print(5);
 }
+
+TEST(TimeSeries, Read_CSV_With_Header_File_Write_And_Compare)
+{
+    File testFile = File::GetTempFile();
+    File headerFile("../test/data/info.header");
+    auto fileDef = TimeSeriesReader::ReadFileDefinition(headerFile);
+
+    File realDataFile("../test/data/info.log");
+    auto result = TimeSeriesReaderCSV(fileDef).Read(realDataFile);
+
+    TimeSeriesReaderCSV(fileDef).Write(testFile, *result);
+
+    EXPECT_TRUE( realDataFile.Compare(testFile) );
+}

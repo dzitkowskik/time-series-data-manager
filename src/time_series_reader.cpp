@@ -7,7 +7,7 @@
 
 #include "time_series_reader.hpp"
 #include <iomanip>
-#include <boost/make_shared.hpp>
+#include <boost/lexical_cast.hpp>
 
 std::vector<std::string> ReadHeader(std::ifstream& inFile, CSVFileDefinition& definition)
 {
@@ -33,6 +33,7 @@ SharedTimeSeriesPtr TimeSeriesReaderCSV::Read(
     // Initialize time series
     auto result = boost::make_shared<TimeSeries>(file.GetPath());
     result->init(_definition.Columns);
+    result->setDecimals(_definition.Decimals);
 
     // Open file and set last position
     std::ifstream inputFile(file.GetPath(), std::ios::in);
@@ -76,6 +77,8 @@ SharedTimeSeriesPtr TimeSeriesReaderBinary::Read(
     // Initialize time series
     auto result = boost::make_shared<TimeSeries>(file.GetPath());
     result->init(_definition.Columns);
+    result->setDecimals(_definition.Decimals);
+
     size_t size = result->getRecordSize();
     size += _alignment;
 //    printf("size = %lu\n", size);
@@ -143,18 +146,27 @@ FileDefinition TimeSeriesReader::ReadFileDefinition(File& file)
 {
 	FileDefinition result;
 	std::ifstream inputFile(file.GetPath(), std::ios::in);
-	std::string line, name, type;
+	std::string line, name, type, decimal;
 	EnumParser<DataType> typeParser;
-
+    size_t position = 0;
 	while(std::getline(inputFile, line))
 	{
-        auto position = line.find(',');
+        // GET NAME
+        position = line.find(',');
         name = line.substr(0, position);
         line.erase(0, position + 1);
-        type = line;
+
+        // GET TYPE
+        position = line.find(',');
+        type = line.substr(0, position);
+        line.erase(0, position + 1);
+
+        // GET DECIMAL
+        decimal = line;
 
 		result.Header.push_back(name);
 		result.Columns.push_back(typeParser.Parse(type));
+        result.Decimals.push_back(boost::lexical_cast<int>(decimal));
 	}
 
 	inputFile.close();

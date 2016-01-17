@@ -8,6 +8,8 @@
 #include "data_type.hpp"
 
 #include <stddef.h>
+#include <sstream>
+#include <iomanip>
 #include <stdexcept>
 #include <boost/lexical_cast.hpp>
 
@@ -20,17 +22,17 @@ struct RawData
 class Column
 {
 public:
-    Column(DataType type) : _type(type), _name("")
-    { init(0); }
+    Column(DataType type) : _type(type), _name(""), _decimal(6) { init(0); }
+    Column(DataType type, int decimal) : _type(type), _name(""), _decimal(decimal) { init(0); }
+    Column(DataType type, std::string name) : _type(type), _name(name), _decimal(6) { init(0); }
+    Column(DataType type, size_t initialSize) : _type(type), _name(""), _decimal(6) { init(initialSize); }
 
-    Column(DataType type, std::string name) : _type(type), _name(name)
-    { init(0); }
-
-    Column(DataType type, size_t initialSize) : _type(type), _name("")
+    Column(DataType type, size_t initialSize, int decimal)
+            : _type(type), _name(""), _decimal(decimal)
     { init(initialSize); }
 
-    Column(DataType type, size_t initialSize, std::string name)
-            : _type(type), _name(name)
+    Column(DataType type, size_t initialSize, std::string name, int decimal)
+            : _type(type), _name(name), _decimal(decimal)
     { init(initialSize); }
 
     ~Column()
@@ -40,7 +42,8 @@ public:
             : _type(other._type),
               _actualSize(other._actualSize),
               _allocatedSize(other._allocatedSize),
-              _dataSize(other._dataSize)
+              _dataSize(other._dataSize),
+              _decimal(other._decimal)
     {
         _data = new char[_allocatedSize];
         memcpy(_data, other._data, _actualSize);
@@ -51,6 +54,10 @@ public:
     size_t getDataSize() const { return _dataSize; }
     DataType getType() const { return _type; }
     char* getData() const { return _data; }
+    int getDecimal() const { return _decimal; }
+
+    void setName(std::string name) { _name = name; }
+    void setDecimal(int decimal) { _decimal = decimal; }
 
     template<typename T> T getValue(size_t index)
     {
@@ -72,6 +79,14 @@ public:
         return RawData { _data+actualIndex, _dataSize };
     }
 
+    template<typename T>
+    std::string toStringWithPrecision(T value)
+    {
+        std::ostringstream ss;
+        ss << std::fixed << std::setprecision(_decimal) << value;
+        return ss.str();
+    }
+
     std::string getStringValue(size_t index)
     {
         time_t time;
@@ -90,9 +105,9 @@ public:
             case DataType::d_unsigned:
                 return boost::lexical_cast<std::string>(getValue<unsigned>(index));
             case DataType::d_float:
-                return boost::lexical_cast<std::string>(getValue<float>(index));
+                return toStringWithPrecision(getValue<float>(index));
             case DataType::d_double:
-                return boost::lexical_cast<std::string>(getValue<double>(index));
+                return toStringWithPrecision(getValue<double>(index));
             case DataType::d_boolean:
                 return boost::lexical_cast<std::string>(getValue<bool>(index));
             case DataType::d_short:
@@ -177,7 +192,7 @@ public:
         return _dataSize;
     }
 
-    void setName(std::string name) { _name = name; }
+
 
     bool compare(Column other)
     {
@@ -228,6 +243,7 @@ private:
     char* _data;
     DataType _type;
     std::string _name;
+    int _decimal;
 
 private:
     const std::string _wrongDataTypeErrorMsg =

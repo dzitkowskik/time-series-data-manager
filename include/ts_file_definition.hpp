@@ -11,6 +11,7 @@ struct FileDefinition
 {
     std::vector<std::string> Header;
     std::vector<DataType> Columns;
+	std::vector<int> Decimals;
 };
 
 struct CSVFileDefinition : FileDefinition

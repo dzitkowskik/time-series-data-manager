@@ -39,6 +39,13 @@ public:
             _columns.push_back(Column(type));
     }
 
+    void setDecimals(std::vector<int> columnDecimals)
+    {
+        size_t len = std::min(columnDecimals.size(), _columns.size());
+        for(int i = 0; i < len; i++)
+            _columns[i].setDecimal(columnDecimals[i]);
+    }
+
     Column& getColumn(size_t colIdx) { return _columns[colIdx]; }
     std::string getName() { return _name; }
     size_t getColumnsNumber() { return _columns.size(); }
