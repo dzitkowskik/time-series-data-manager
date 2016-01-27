@@ -155,3 +155,17 @@ TEST(TimeSeries, Read_Binary_With_Header_File_Write_And_Compare)
 
     EXPECT_TRUE( another->compare(*result) );
 }
+
+TEST(TimeSeries, Read_NYSE_CSV_With_Header_File)
+{
+    File testFile = File::GetTempFile();
+    File headerFile("../test/data/nyse.header");
+    auto fileDef = TimeSeriesReader::ReadFileDefinition(headerFile);
+
+    File realDataFile("../test/data/nyse.csv");
+    auto result = TimeSeriesReaderCSV(fileDef).Read(realDataFile);
+
+    TimeSeriesReaderCSV(fileDef).Write(testFile, *result);
+
+    EXPECT_TRUE( realDataFile.Compare(testFile) );
+}

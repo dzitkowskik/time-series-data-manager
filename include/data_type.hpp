@@ -73,7 +73,7 @@ inline std::string GetDataTypeString(DataType type)
         case DataType::d_time: return "time_t";
         case DataType::d_char: return "char";
         case DataType::d_int: return "int";
-        case DataType::d_unsigned: return "unsigned";
+        case DataType::d_unsigned: return "unsigned int";
         case DataType::d_float: return "float";
         case DataType::d_double: return "double";
         case DataType::d_boolean: return "bool";

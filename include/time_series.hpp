@@ -121,16 +121,32 @@ public:
 
     void print(int n)
     {
-    	printf("TimeSeries %s:\n", this->getName().c_str());
-    	for(int i = 0; i < n && i < this->getRecordsCnt(); i++)
+    	printf("TimeSeries %s:\n", getName().c_str());
+    	for(int i = 0; i < n && i < getRecordsCnt(); i++)
     	{
 			printf("Row %d: ", i);
-			for(auto& row : this->getRecordAsStrings(i))
+			for(auto& row : getRecordAsStrings(i))
 				printf("%s, ", row.c_str());
 			printf("\n");
     	}
     	printf("--------\n");
     }
+
+//    SharedTimeSeriesPtr copy(int rows = 0)
+//    {
+//    	if(rows == 0) rows = getRecordsCnt();
+//    	FileDefinition def;
+//    	for(auto& column : _columns)
+//    	{
+//    		def.Columns.push_back(column.getType());
+//    		def.Header.push_back(column.getName());
+//    		def.Decimals.push_back(column.getDecimal());
+//    	}
+//    	auto result = TimeSeries::make_shared(def);
+//    	for(int i = 0; i < rows; i++)
+//    		result->addRecord(getRawRecordData(i).Data);
+//    	return result;
+//    }
 
 public:
     static SharedTimeSeriesPtr make_shared(FileDefinition& def)

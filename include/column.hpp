@@ -175,9 +175,9 @@ public:
             case DataType::d_double:
                 addValue<double>(boost::lexical_cast<double>(value)); break;
             case DataType::d_boolean:
-                addValue<float>(boost::lexical_cast<float>(value)); break;
+                addValue<bool>(boost::lexical_cast<bool>(value)); break;
             case DataType::d_short:
-                addValue<double>(boost::lexical_cast<double>(value)); break;
+                addValue<short>(boost::lexical_cast<short>(value)); break;
         }
     }
 
