@@ -34,6 +34,7 @@ public:
 
 public:
 	static FileDefinition ReadFileDefinition(File& file);
+	static void WriteFileDefinition(File& file, FileDefinition& definition);
 
 protected:
 	size_t _lastFilePosition;

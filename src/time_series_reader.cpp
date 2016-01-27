@@ -173,3 +173,20 @@ FileDefinition TimeSeriesReader::ReadFileDefinition(File& file)
 	inputFile.close();
 	return result;
 }
+
+void TimeSeriesReader::WriteFileDefinition(File& file, FileDefinition& definition)
+{
+	std::ofstream outFile(file.GetPath(), std::ios::out);
+
+	for(int i = 0; i < definition.Columns.size(); i++)
+	{
+		outFile << definition.Header[i] << ',';
+		outFile << GetDataTypeString(definition.Columns[i]) << ',';
+		if(definition.Decimals.size() > i)
+			outFile << definition.Decimals[i];
+		else outFile << "0";
+		outFile << std::endl;
+	}
+
+	outFile.close();
+}
