@@ -110,11 +110,13 @@ void WriteLine(
 
 void TimeSeriesReaderCSV::Write(File& file, TimeSeries& series)
 {
-    std::ofstream outFile(file.GetPath(), std::ios::out);
+    std::ofstream outFile(file.GetPath(), std::ios::app);
     // Write header as column names
     if(_definition.HasHeader)
+    {
         WriteLine(outFile, series.getColumnNames(), _definition);
-
+    	_definition.HasHeader = false;
+    }
     for(size_t i = 0; i < series.getRecordsCnt(); i++)
         WriteLine(outFile, series.getRecordAsStrings(i), _definition);
 
